@@ -1,0 +1,430 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+---
+
+<Layout title="Dashboard — Micro & Calorie Tracker">
+  <Navbar currentPage="/dashboard" />
+
+  <main class="max-w-[1400px] mx-auto px-6 py-10">
+
+    <!-- Page header -->
+    <div class="mb-8">
+      <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide mb-1">Overview</p>
+      <h1 class="text-[32px] font-semibold tracking-[-1.28px] text-[#171717]">Your nutrition dashboard.</h1>
+      <p class="text-[15px] text-[#4d4d4d] mt-1">Track your daily intake and weekly trends at a glance.</p>
+    </div>
+
+    <!-- Today summary cards (JS-populated from localStorage) -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="summary-cards">
+      {[
+        { id: 'sc-cal',     label: 'Calories today', unit: 'kcal', goal: 2000, color: '#171717' },
+        { id: 'sc-protein', label: 'Protein',         unit: 'g',    goal: 120,  color: '#3b82f6' },
+        { id: 'sc-carbs',   label: 'Carbs',           unit: 'g',    goal: 250,  color: '#f59e0b' },
+        { id: 'sc-fat',     label: 'Fat',             unit: 'g',    goal: 65,   color: '#ef4444' },
+      ].map(c => (
+        <div class="rounded-[12px] bg-white border border-[#ebebeb] p-5 shadow-card">
+          <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide mb-3">{c.label}</p>
+          <div class="flex items-end gap-1 mb-3">
+            <span id={c.id + '-val'} class="text-[28px] font-semibold tracking-[-1px] text-[#171717]">—</span>
+            <span class="text-[13px] text-[#888888] mb-1">{c.unit}</span>
+          </div>
+          <div class="h-1.5 rounded-full bg-[#ebebeb] overflow-hidden mb-1.5">
+            <div id={c.id + '-bar'} class="h-full rounded-full transition-all duration-700" style={`width:0%;background:${c.color}`}></div>
+          </div>
+          <p id={c.id + '-pct'} class="text-[12px] text-[#888888]">0% of {c.goal}{c.unit} goal</p>
+        </div>
+      ))}
+    </div>
+
+    <!-- Goal weight progress banner -->
+    <div id="goal-weight-banner" class="hidden rounded-[12px] bg-white border border-[#ebebeb] p-5 shadow-card mb-6">
+      <div class="flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide mb-1">Weight goal progress</p>
+          <div class="flex items-baseline gap-2">
+            <span id="gw-current" class="text-[28px] font-semibold tracking-[-1px] text-[#171717]">—</span>
+            <span class="text-[13px] text-[#888888]">kg current</span>
+            <span class="text-[20px] text-[#ebebeb] mx-1">→</span>
+            <span id="gw-target" class="text-[20px] font-semibold tracking-[-0.6px] text-[#0070f3]">—</span>
+            <span class="text-[13px] text-[#888888]">kg target</span>
+          </div>
+        </div>
+        <div class="flex-1 min-w-[200px]">
+          <div class="flex justify-between text-[12px] font-mono text-[#888888] mb-1.5">
+            <span id="gw-remaining">— kg to go</span>
+            <span id="gw-pct">0%</span>
+          </div>
+          <div class="h-2 rounded-full bg-[#ebebeb] overflow-hidden">
+            <div id="gw-bar" class="h-full rounded-full bg-[#0070f3] transition-all duration-700" style="width:0%"></div>
+          </div>
+          <p id="gw-eta" class="text-[11px] font-mono text-[#888888] mt-1.5"></p>
+        </div>
+        <a href="/profile" class="px-4 h-9 rounded-full border border-[#ebebeb] text-[13px] font-medium text-[#171717] hover:bg-[#fafafa] transition-colors flex items-center shrink-0">
+          Update weight
+        </a>
+      </div>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-6">
+
+      <!-- Weekly chart (left 2 cols) -->
+      <div class="lg:col-span-2 rounded-[12px] bg-white border border-[#ebebeb] p-6 shadow-card">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide">Weekly calories</p>
+            <p class="text-[20px] font-semibold tracking-[-0.6px] text-[#171717] mt-0.5">This week</p>
+          </div>
+          <div class="flex gap-1">
+            {['W', 'M', '3M'].map(t => (
+              <button class={`px-3 h-7 rounded-full text-[12px] transition-colors ${t === 'W' ? 'bg-[#171717] text-white' : 'text-[#888888] hover:bg-[#fafafa]'}`}>{t}</button>
+            ))}
+          </div>
+        </div>
+
+        <!-- Bar chart -->
+        <div class="flex items-end gap-3 h-40">
+          {[
+            { day: 'Mon', cal: 1850, pct: 93 },
+            { day: 'Tue', cal: 2100, pct: 100 },
+            { day: 'Wed', cal: 1620, pct: 81 },
+            { day: 'Thu', cal: 1980, pct: 99 },
+            { day: 'Fri', cal: 1420, pct: 71 },
+            { day: 'Sat', cal: 0,    pct: 0 },
+            { day: 'Sun', cal: 0,    pct: 0 },
+          ].map((d, i) => (
+            <div class="flex-1 flex flex-col items-center gap-1.5">
+              <span class="text-[11px] font-mono text-[#888888]">{d.cal > 0 ? d.cal : ''}</span>
+              <div class="w-full rounded-t-[4px] transition-all duration-700"
+                style={`height:${d.pct}%; background:${i === 4 ? '#171717' : '#ebebeb'}; min-height:4px`}></div>
+              <span class="text-[11px] text-[#888888]">{d.day}</span>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-[#ebebeb] flex items-center gap-6 text-[12px] text-[#888888]">
+          <span>Avg: <strong class="text-[#171717]">1,794 kcal</strong></span>
+          <span>Goal: <strong class="text-[#171717]">2,000 kcal</strong></span>
+          <span>Streak: <strong class="text-[#171717]">5 days 🔥</strong></span>
+        </div>
+      </div>
+
+      <!-- Macro breakdown (right col) -->
+      <div class="rounded-[12px] bg-white border border-[#ebebeb] p-6 shadow-card">
+        <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide mb-5">Today's macros</p>
+        <div class="flex justify-center mb-6">
+          <svg width="140" height="140" viewBox="0 0 140 140">
+            <!-- Donut rings -->
+            <circle cx="70" cy="70" r="50" fill="none" stroke="#ebebeb" stroke-width="16"/>
+            <!-- Protein 68% -->
+            <circle cx="70" cy="70" r="50" fill="none" stroke="#3b82f6" stroke-width="16"
+              stroke-dasharray="214 100" stroke-dashoffset="0"
+              stroke-linecap="round" transform="rotate(-90 70 70)"/>
+            <!-- Carbs 67% -->
+            <circle cx="70" cy="70" r="50" fill="none" stroke="#f59e0b" stroke-width="16"
+              stroke-dasharray="140 174" stroke-dashoffset="-214"
+              stroke-linecap="round" transform="rotate(-90 70 70)"/>
+            <!-- Fat 68% -->
+            <circle cx="70" cy="70" r="50" fill="none" stroke="#ef4444" stroke-width="16"
+              stroke-dasharray="90 224" stroke-dashoffset="-354"
+              stroke-linecap="round" transform="rotate(-90 70 70)"/>
+            <text x="70" y="66" text-anchor="middle" font-size="18" font-weight="600" fill="#171717">1,420</text>
+            <text x="70" y="82" text-anchor="middle" font-size="11" fill="#888888">kcal</text>
+          </svg>
+        </div>
+        <div class="space-y-3">
+          {[
+            { label: 'Protein', val: '82g', color: '#3b82f6' },
+            { label: 'Carbs',   val: '168g', color: '#f59e0b' },
+            { label: 'Fat',     val: '44g',  color: '#ef4444' },
+            { label: 'Fibre',   val: '18g',  color: '#10b981' },
+          ].map(m => (
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-2.5 h-2.5 rounded-full" style={`background:${m.color}`}></div>
+                <span class="text-[13px] text-[#4d4d4d]">{m.label}</span>
+              </div>
+              <span class="text-[13px] font-mono font-medium text-[#171717]">{m.val}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Today's meals (from localStorage) -->
+    <div class="mt-6 rounded-[12px] bg-white border border-[#ebebeb] overflow-hidden shadow-card">
+      <div class="px-6 py-4 border-b border-[#ebebeb] flex items-center justify-between">
+        <div>
+          <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide">Today's meals</p>
+          <p id="meals-date" class="text-[13px] text-[#4d4d4d] mt-0.5"></p>
+        </div>
+        <a href="/" class="px-4 h-8 rounded-full bg-[#171717] text-white text-[12px] font-medium flex items-center hover:bg-[#333] transition-colors">+ Scan meal</a>
+      </div>
+      <div id="today-meals-list" class="divide-y divide-[#ebebeb]">
+        <!-- JS populated -->
+      </div>
+      <div id="today-meals-empty" class="hidden px-6 py-10 text-center">
+        <p class="text-[14px] text-[#888888]">No meals logged today.</p>
+        <a href="/" class="text-[13px] text-[#0070f3] hover:underline mt-1 inline-block">Scan your first meal →</a>
+      </div>
+    </div>
+
+    <!-- Full daily nutrition report table (blood-report style) -->
+    <div class="mt-6 rounded-[12px] bg-white border border-[#ebebeb] overflow-hidden shadow-card">
+      <div class="px-6 py-4 border-b border-[#ebebeb] flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide">Daily nutrition report</p>
+          <p class="text-[13px] text-[#4d4d4d] mt-0.5">Your intake vs. recommended daily reference values</p>
+        </div>
+        <span class="text-[11px] font-mono text-[#888888] bg-[#fafafa] border border-[#ebebeb] px-2 py-1 rounded-full">Based on WHO / EU NRV</span>
+      </div>
+      <!-- Tab switcher -->
+      <div class="flex border-b border-[#ebebeb]">
+        <button id="dtab-macros" onclick="switchDTab('macros')"
+          class="flex-1 py-2.5 text-[12px] font-medium text-[#171717] border-b-2 border-[#171717] transition-colors">Macros & Energy</button>
+        <button id="dtab-micros" onclick="switchDTab('micros')"
+          class="flex-1 py-2.5 text-[12px] font-medium text-[#888888] border-b-2 border-transparent hover:text-[#171717] transition-colors">Vitamins & Minerals</button>
+      </div>
+      <div class="overflow-x-auto">
+        <div class="min-w-[500px]">
+          <div class="grid grid-cols-5 px-6 py-2 bg-[#fafafa] border-b border-[#ebebeb]">
+            <span class="col-span-2 text-[11px] font-mono text-[#888888] uppercase tracking-wide">Nutrient</span>
+            <span class="text-[11px] font-mono text-[#888888] uppercase tracking-wide text-right">Consumed</span>
+            <span class="text-[11px] font-mono text-[#888888] uppercase tracking-wide text-right">Daily ref.</span>
+            <span class="text-[11px] font-mono text-[#888888] uppercase tracking-wide text-right">Status</span>
+          </div>
+          <div id="daily-table-macros" class="divide-y divide-[#ebebeb]"><!-- JS --></div>
+          <div id="daily-table-micros" class="divide-y divide-[#ebebeb] hidden"><!-- JS --></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Suggested next meals -->
+    <div class="mt-6 rounded-[12px] bg-white border border-[#ebebeb] overflow-hidden shadow-card">
+      <div class="px-6 py-4 border-b border-[#ebebeb]">
+        <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide">Suggested next meal</p>
+        <p class="text-[13px] text-[#4d4d4d] mt-0.5">Based on what your body still needs today</p>
+      </div>
+      <div class="grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-[#ebebeb]">
+        {[
+          { name: 'Grilled Salmon Salad', emoji: '🥗', cal: 320, protein: 38, reason: 'Fills your protein & omega-3 gap', tag: 'High protein' },
+          { name: 'Lentil & Spinach Soup', emoji: '🍲', cal: 280, protein: 18, reason: 'Iron, folate & fibre boost', tag: 'Micronutrient rich' },
+          { name: 'Greek Yogurt + Berries', emoji: '🫐', cal: 180, protein: 14, reason: 'Calcium, probiotics & antioxidants', tag: 'Light & balanced' },
+        ].map(m => (
+          <div class="p-5 hover:bg-[#fafafa] transition-colors">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">{m.emoji}</span>
+              <div class="flex-1">
+                <div class="flex items-start justify-between gap-2">
+                  <p class="text-[14px] font-medium text-[#171717]">{m.name}</p>
+                  <span class="shrink-0 px-2 py-0.5 rounded-full bg-[#fafafa] border border-[#ebebeb] text-[10px] font-mono text-[#888888]">{m.tag}</span>
+                </div>
+                <p class="text-[12px] text-[#888888] mt-1">{m.reason}</p>
+                <div class="flex items-center gap-3 mt-2 text-[12px] font-mono">
+                  <span class="text-[#171717]">~{m.cal} kcal</span>
+                  <span class="text-[#3b82f6]">{m.protein}g protein</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Micronutrient gaps -->
+    <div class="mt-6 rounded-[12px] bg-[#171717] p-6 shadow-card-lg">
+      <div class="flex items-center gap-2 mb-5">
+        <div class="w-5 h-5 rounded-full bg-[#50e3c2] flex items-center justify-center">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M2 5l2 2 4-4" stroke="#171717" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <p class="text-[12px] font-mono text-[#50e3c2] uppercase tracking-wide">Nutritional gaps today</p>
+      </div>
+      <div class="grid sm:grid-cols-3 gap-4" id="gap-cards">
+        {[
+          { nutrient: 'Vitamin D', current: '3.2 µg', target: '15 µg', pct: 21, tip: 'Add fatty fish or fortified milk.' },
+          { nutrient: 'Iron',      current: '8 mg',   target: '14 mg', pct: 57, tip: 'Try spinach, lentils or red meat.' },
+          { nutrient: 'Calcium',   current: '480 mg', target: '800 mg', pct: 60, tip: 'Include dairy, tofu or broccoli.' },
+        ].map(g => (
+          <div class="rounded-[8px] bg-white/5 border border-white/10 p-4">
+            <p class="text-[13px] font-medium text-white mb-1">{g.nutrient}</p>
+            <p class="text-[12px] font-mono text-[#888888] mb-3">{g.current} / {g.target}</p>
+            <div class="h-1 rounded-full bg-white/10 overflow-hidden mb-2">
+              <div class="h-full rounded-full bg-[#50e3c2]" style={`width:${g.pct}%`}></div>
+            </div>
+            <p class="text-[12px] text-[#888888]">{g.tip}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+  </main>
+</Layout>
+
+<script>
+// ── Helpers ────────────────────────────────────────────────────────────────
+interface LoggedMeal { name: string; calories: number; protein: number; carbs: number; fat: number; time: string; }
+
+const TODAY = new Date().toDateString();
+function getLog(): LoggedMeal[] {
+  try { return JSON.parse(localStorage.getItem('mct_log_' + TODAY) || '[]'); } catch { return []; }
+}
+function getTotals(log: LoggedMeal[]) {
+  return log.reduce((a, m) => ({
+    calories: a.calories + m.calories, protein: a.protein + m.protein,
+    carbs: a.carbs + m.carbs, fat: a.fat + m.fat,
+  }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
+}
+
+function statusBadge(pct: number, isNeg = false) {
+  let label: string, color: string;
+  if (isNeg) {
+    if (pct > 100) { label = 'High'; color = '#ee0000'; }
+    else if (pct > 75) { label = 'Caution'; color = '#f5a623'; }
+    else { label = 'OK'; color = '#10b981'; }
+  } else {
+    if (pct >= 80) { label = 'Good'; color = '#10b981'; }
+    else if (pct >= 40) { label = 'Fair'; color = '#f5a623'; }
+    else { label = 'Low'; color = '#ee0000'; }
+  }
+  return `<span class="px-2 py-0.5 rounded-full text-[11px] font-medium" style="background:${color}20;color:${color}">${label}</span>`;
+}
+
+function tableRow(name: string, val: number, unit: string, ref: number, isNeg = false) {
+  const pct = Math.round((val / ref) * 100);
+  const barW = Math.min(pct, 100);
+  const barColor = isNeg
+    ? (pct > 100 ? '#ee0000' : pct > 75 ? '#f5a623' : '#10b981')
+    : (pct >= 80 ? '#10b981' : pct >= 40 ? '#f5a623' : '#ee0000');
+  return `
+    <div class="grid grid-cols-5 items-center px-6 py-3 hover:bg-[#fafafa] transition-colors">
+      <div class="col-span-2">
+        <p class="text-[13px] text-[#171717] font-medium">${name}</p>
+        <div class="mt-1 h-1 w-full rounded-full bg-[#ebebeb] overflow-hidden">
+          <div class="h-full rounded-full transition-all duration-700" style="width:${barW}%;background:${barColor}"></div>
+        </div>
+      </div>
+      <p class="text-[13px] font-mono text-[#171717] text-right">${val}${unit}</p>
+      <p class="text-[13px] font-mono text-[#888888] text-right">${ref}${unit}</p>
+      <div class="flex justify-end">${statusBadge(pct, isNeg)}</div>
+    </div>`;
+}
+
+// ── Tab switcher ───────────────────────────────────────────────────────────
+(window as any).switchDTab = (tab: 'macros' | 'micros') => {
+  const mTab = document.getElementById('dtab-macros')!;
+  const vTab = document.getElementById('dtab-micros')!;
+  const mBody = document.getElementById('daily-table-macros')!;
+  const vBody = document.getElementById('daily-table-micros')!;
+  if (tab === 'macros') {
+    mTab.className = 'flex-1 py-2.5 text-[12px] font-medium text-[#171717] border-b-2 border-[#171717] transition-colors';
+    vTab.className = 'flex-1 py-2.5 text-[12px] font-medium text-[#888888] border-b-2 border-transparent hover:text-[#171717] transition-colors';
+    mBody.classList.remove('hidden'); vBody.classList.add('hidden');
+  } else {
+    vTab.className = 'flex-1 py-2.5 text-[12px] font-medium text-[#171717] border-b-2 border-[#171717] transition-colors';
+    mTab.className = 'flex-1 py-2.5 text-[12px] font-medium text-[#888888] border-b-2 border-transparent hover:text-[#171717] transition-colors';
+    vBody.classList.remove('hidden'); mBody.classList.add('hidden');
+  }
+};
+
+// ── Populate page ──────────────────────────────────────────────────────────
+const log = getLog();
+const totals = getTotals(log);
+
+// Date label
+document.getElementById('meals-date')!.textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+
+// Summary cards
+const GOALS = { cal: 2000, protein: 120, carbs: 250, fat: 65 };
+const cardMap = [
+  { id: 'sc-cal',     val: totals.calories, goal: GOALS.cal,     unit: 'kcal' },
+  { id: 'sc-protein', val: totals.protein,  goal: GOALS.protein, unit: 'g' },
+  { id: 'sc-carbs',   val: totals.carbs,    goal: GOALS.carbs,   unit: 'g' },
+  { id: 'sc-fat',     val: totals.fat,      goal: GOALS.fat,     unit: 'g' },
+];
+cardMap.forEach(c => {
+  const pct = Math.min(Math.round(c.val / c.goal * 100), 100);
+  document.getElementById(c.id + '-val')!.textContent = c.val.toString();
+  (document.getElementById(c.id + '-bar') as HTMLElement).style.width = pct + '%';
+  document.getElementById(c.id + '-pct')!.textContent = `${pct}% of ${c.goal}${c.unit} goal`;
+});
+
+// Goal weight banner
+const profile = (() => { try { return JSON.parse(localStorage.getItem('mct_profile') || '{}'); } catch { return {}; } })();
+if (profile.weight && profile.targetWeight) {
+  const banner = document.getElementById('goal-weight-banner')!;
+  banner.classList.remove('hidden');
+  const start = profile.startWeight || profile.weight;
+  const current = profile.weight;
+  const target = profile.targetWeight;
+  const totalDiff = Math.abs(start - target);
+  const done = Math.abs(start - current);
+  const pct = totalDiff > 0 ? Math.min(Math.round(done / totalDiff * 100), 100) : 0;
+  const remaining = Math.abs(current - target).toFixed(1);
+  const weeksEta = Math.ceil(parseFloat(remaining) / 0.5); // ~0.5kg/week
+  document.getElementById('gw-current')!.textContent = current;
+  document.getElementById('gw-target')!.textContent = target;
+  document.getElementById('gw-remaining')!.textContent = `${remaining} kg to go`;
+  document.getElementById('gw-pct')!.textContent = pct + '%';
+  (document.getElementById('gw-bar') as HTMLElement).style.width = pct + '%';
+  document.getElementById('gw-eta')!.textContent = `Est. ${weeksEta} week${weeksEta !== 1 ? 's' : ''} at 0.5 kg/week`;
+}
+
+// Today's meals list
+const mealsList = document.getElementById('today-meals-list')!;
+const mealsEmpty = document.getElementById('today-meals-empty')!;
+const emojis = ['🍛','🥗','🥣','🌯','🍲','🥦','🐟','🥑','🍚','🫙'];
+if (log.length === 0) {
+  mealsEmpty.classList.remove('hidden');
+} else {
+  mealsList.innerHTML = log.map((m, i) => `
+    <div class="px-6 py-4 flex items-center gap-4 hover:bg-[#fafafa] transition-colors">
+      <div class="w-10 h-10 rounded-[8px] bg-[#fafafa] border border-[#ebebeb] flex items-center justify-center text-xl shrink-0">
+        ${emojis[i % emojis.length]}
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-[14px] font-medium text-[#171717] truncate">${m.name}</p>
+        <p class="text-[12px] font-mono text-[#888888]">Today, ${m.time}</p>
+      </div>
+      <div class="hidden sm:flex items-center gap-5 text-[12px] font-mono text-[#888888] shrink-0">
+        <span><strong class="text-[#3b82f6]">${m.protein}g</strong> protein</span>
+        <span><strong class="text-[#f59e0b]">${m.carbs}g</strong> carbs</span>
+        <span><strong class="text-[#ef4444]">${m.fat}g</strong> fat</span>
+      </div>
+      <div class="text-right shrink-0">
+        <p class="text-[15px] font-semibold text-[#171717]">${m.calories}</p>
+        <p class="text-[11px] text-[#888888]">kcal</p>
+      </div>
+    </div>`).join('');
+}
+
+// Daily nutrition report table — Macros
+document.getElementById('daily-table-macros')!.innerHTML = [
+  tableRow('Energy',   totals.calories,                          'kcal', 2000),
+  tableRow('Protein',  totals.protein,                           'g',    50),
+  tableRow('Carbs',    totals.carbs,                             'g',    260),
+  tableRow('Fat',      totals.fat,                               'g',    70),
+  tableRow('Fibre',    Math.round(totals.carbs * 0.09),          'g',    25),
+  tableRow('Sugar',    Math.round(totals.carbs * 0.3),           'g',    90,  true),
+  tableRow('Sat. Fat', Math.round(totals.fat * 0.4),             'g',    20,  true),
+].join('');
+
+// Daily nutrition report table — Micros (estimated from meals)
+const mScale = log.length > 0 ? log.length * 0.6 : 0;
+document.getElementById('daily-table-micros')!.innerHTML = [
+  tableRow('Vitamin A',   Math.round(180 * mScale), 'µg', 800),
+  tableRow('Vitamin C',   Math.round(12  * mScale), 'mg', 80),
+  tableRow('Vitamin D',   Math.round(1.2 * mScale * 10) / 10, 'µg', 15),
+  tableRow('Vitamin E',   Math.round(2.4 * mScale * 10) / 10, 'mg', 12),
+  tableRow('Vitamin K',   Math.round(18  * mScale), 'µg', 75),
+  tableRow('Vitamin B12', Math.round(0.6 * mScale * 10) / 10, 'µg', 2.4),
+  tableRow('Folate',      Math.round(32  * mScale), 'µg', 200),
+  tableRow('Iron',        Math.round(3.2 * mScale * 10) / 10, 'mg', 14),
+  tableRow('Calcium',     Math.round(95  * mScale), 'mg', 800),
+  tableRow('Potassium',   Math.round(420 * mScale), 'mg', 2000),
+  tableRow('Sodium',      Math.round(680 * mScale), 'mg', 2300, true),
+  tableRow('Zinc',        Math.round(2.1 * mScale * 10) / 10, 'mg', 10),
+  tableRow('Magnesium',   Math.round(38  * mScale), 'mg', 375),
+].join('');
+</script>

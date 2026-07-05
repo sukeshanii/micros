@@ -1,0 +1,136 @@
+---
+interface Props {
+  currentPage?: string;
+}
+const { currentPage = '/' } = Astro.props;
+---
+
+<header
+  class="sticky top-0 z-50 bg-[#ffffff]/90 backdrop-blur-md border-b border-[#ebebeb] h-16"
+  style="box-shadow: 0 0 0 1px #00000008 inset; transition: background-color 0.3s ease;"
+>
+  <nav class="max-w-[1400px] mx-auto px-6 h-full flex items-center justify-between gap-6">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2 shrink-0 group">
+      <div class="w-7 h-7 rounded-[6px] bg-[#171717] flex items-center justify-center">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="5" stroke="#50e3c2" stroke-width="1.5" fill="none"/>
+          <circle cx="8" cy="8" r="2" fill="#50e3c2"/>
+        </svg>
+      </div>
+      <span class="text-[14px] font-semibold tracking-[-0.28px] text-[#171717]">
+        micro<span class="text-[#888888]">&</span>calorie
+      </span>
+    </a>
+
+    <!-- Nav links (desktop) -->
+    <div class="hidden md:flex items-center gap-1">
+      <a
+        href="/"
+        class={`px-3 py-1.5 rounded-full text-[14px] transition-colors ${currentPage === '/' ? 'text-[#171717] bg-[#f5f5f5]' : 'text-[#4d4d4d] hover:text-[#171717] hover:bg-[#f5f5f5]'}`}
+      >
+        Scanner
+      </a>
+      <a
+        href="/dashboard"
+        class={`px-3 py-1.5 rounded-full text-[14px] transition-colors ${currentPage === '/dashboard' ? 'text-[#171717] bg-[#f5f5f5]' : 'text-[#4d4d4d] hover:text-[#171717] hover:bg-[#f5f5f5]'}`}
+      >
+        Dashboard
+      </a>
+      <a
+        href="/profile"
+        class={`px-3 py-1.5 rounded-full text-[14px] transition-colors ${currentPage === '/profile' ? 'text-[#171717] bg-[#f5f5f5]' : 'text-[#4d4d4d] hover:text-[#171717] hover:bg-[#f5f5f5]'}`}
+      >
+        Profile
+      </a>
+    </div>
+
+    <!-- CTA cluster -->
+    <div class="flex items-center gap-2">
+      <!-- Dark mode toggle -->
+      <button
+        id="theme-toggle"
+        class="flex items-center justify-center w-10 h-10 rounded-full text-[#171717] border border-[#ebebeb] bg-white hover:bg-[#fafafa] transition-colors dark:bg-[#1a1a1a] dark:border-[#333333] dark:text-white"
+        aria-label="Toggle dark mode"
+      >
+        <svg id="sun-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg id="moon-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="hidden">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+
+      <a
+        href="/profile"
+        class="hidden sm:flex items-center gap-1.5 px-3 h-7 rounded-[6px] text-[13px] font-medium text-[#171717] border border-[#ebebeb] bg-white hover:bg-[#fafafa] transition-colors dark:text-white dark:bg-[#1a1a1a] dark:border-[#333333] dark:hover:bg-[#2a2a2a]"
+      >
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <circle cx="6" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M1.5 10.5c0-2.485 2.015-4.5 4.5-4.5s4.5 2.015 4.5 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        Profile
+      </a>
+      <a
+        href="/"
+        class="flex items-center px-3 h-7 rounded-[6px] text-[13px] font-medium bg-[#171717] text-white hover:bg-[#333] transition-colors dark:bg-white dark:text-[#171717] dark:hover:bg-[#e0e0e0]"
+      >
+        Scan Meal
+      </a>
+
+      <!-- Hamburger (mobile) -->
+      <button id="menu-toggle" class="md:hidden flex items-center justify-center w-10 h-10 rounded-full text-[#171717] border border-[#ebebeb] bg-white hover:bg-[#fafafa] transition-colors" aria-label="Open menu">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile menu overlay -->
+  <div id="mobile-menu" class="fixed inset-0 z-50 hidden md:hidden">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" id="menu-backdrop"></div>
+    <div class="absolute top-0 right-0 w-64 h-full bg-white dark:bg-[#0a0a0a] shadow-2xl p-6">
+      <div class="flex justify-end mb-8">
+        <button id="menu-close" class="flex items-center justify-center w-8 h-8 rounded-full text-[#888888] hover:text-[#171717] dark:hover:text-white transition-colors" aria-label="Close menu">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <nav class="flex flex-col gap-2">
+        <a href="/" class="px-4 py-2.5 rounded-[8px] text-[15px] font-medium transition-colors ${currentPage === '/' ? 'text-[#171717] bg-[#f5f5f5] dark:text-white dark:bg-[#1a1a1a]' : 'text-[#4d4d4d] hover:text-[#171717] hover:bg-[#f5f5f5] dark:hover:text-white dark:hover:bg-[#1a1a1a]'}">
+          Scanner
+        </a>
+        <a href="/dashboard" class="px-4 py-2.5 rounded-[8px] text-[15px] font-medium transition-colors ${currentPage === '/dashboard' ? 'text-[#171717] bg-[#f5f5f5] dark:text-white dark:bg-[#1a1a1a]' : 'text-[#4d4d4d] hover:text-[#171717] hover:bg-[#f5f5f5] dark:hover:text-white dark:hover:bg-[#1a1a1a]'}">
+          Dashboard
+        </a>
+        <a href="/profile" class="px-4 py-2.5 rounded-[8px] text-[15px] font-medium transition-colors ${currentPage === '/profile' ? 'text-[#171717] bg-[#f5f5f5] dark:text-white dark:bg-[#1a1a1a]' : 'text-[#4d4d4d] hover:text-[#171717] hover:bg-[#f5f5f5] dark:hover:text-white dark:hover:bg-[#1a1a1a]'}">
+          Profile
+        </a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<script>
+  const menuToggle = document.getElementById('menu-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuClose = document.getElementById('menu-close');
+  const menuBackdrop = document.getElementById('menu-backdrop');
+
+  function openMenu() { mobileMenu?.classList.remove('hidden'); }
+  function closeMenu() { mobileMenu?.classList.add('hidden'); }
+
+  menuToggle?.addEventListener('click', openMenu);
+  menuClose?.addEventListener('click', closeMenu);
+  menuBackdrop?.addEventListener('click', closeMenu);
+</script>

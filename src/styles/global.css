@@ -1,0 +1,246 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors from DESIGN.md */
+  --color-ink: #171717;
+  --color-on-primary: #ffffff;
+  --color-body-text: #4d4d4d;
+  --color-mute: #888888;
+  --color-hairline: #d8e4e8;
+  --color-hairline-strong: #9ab0b8;
+  --color-canvas: #ffffff;
+  --color-canvas-soft: #f5f9fa;
+  --color-canvas-soft-2: #edf4f5;
+  --color-link: #0e8fd8;
+  --color-link-deep: #0761d1;
+  --color-success: #10b981;
+  --color-error: #ee0000;
+  --color-warning: #f5a623;
+  --color-cyan: #50e3c2;
+  --color-cyan-soft: #aaffec;
+  --color-violet: #7928ca;
+  --color-highlight-pink: #ff0080;
+  --color-accent-blue: #3b82f6;
+  --color-accent-green: #22d3a7;
+
+  /* Gradient stops */
+  --color-grad-develop-start: #007cf0;
+  --color-grad-develop-end: #00dfd8;
+  --color-grad-preview-start: #7928ca;
+  --color-grad-preview-end: #ff0080;
+  --color-grad-ship-start: #ff4d4d;
+  --color-grad-ship-end: #f9cb28;
+
+  /* Nutrition accent colors */
+  --color-protein: #3b82f6;
+  --color-carbs: #f59e0b;
+  --color-fat: #ef4444;
+  --color-fiber: #10b981;
+  --color-energy: #8b5cf6;
+
+  /* Typography */
+  --font-sans: Geist, Inter, system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+
+  /* Border radius */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill: 100px;
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --spacing-xxs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 40px;
+  --spacing-3xl: 48px;
+  --spacing-4xl: 64px;
+  --spacing-5xl: 96px;
+  --spacing-section: 192px;
+}
+
+/* Base resets */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-canvas-soft);
+  color: var(--color-ink);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Selection */
+::selection {
+  background: var(--color-ink);
+  color: #f2f2f2;
+}
+
+/* Stacked shadow utilities */
+.shadow-card {
+  box-shadow:
+    0 0 0 1px #00000014 inset,
+    0px 1px 1px #00000005,
+    0px 2px 2px #0000000a;
+}
+
+.shadow-card-md {
+  box-shadow:
+    0 0 0 1px #00000014 inset,
+    0px 2px 2px #0000000a,
+    0px 8px 8px -8px #0000000a;
+}
+
+.shadow-card-lg {
+  box-shadow:
+    0 0 0 1px #00000014 inset,
+    0px 2px 2px #0000000a,
+    0px 8px 16px -4px #0000000a;
+}
+
+/* Mesh gradient */
+.mesh-gradient {
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 30%, #007cf045 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 20%, #22d3a730 0%, transparent 55%),
+    radial-gradient(ellipse 70% 60% at 60% 80%, #3b82f625 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 10% 80%, #00dfd830 0%, transparent 50%),
+    radial-gradient(ellipse 40% 30% at 90% 70%, #10b98125 0%, transparent 50%);
+}
+
+/* Nutrition macro ring animation */
+@keyframes ring-fill {
+  from { stroke-dashoffset: 283; }
+  to { stroke-dashoffset: var(--target-offset); }
+}
+
+.ring-animate {
+  animation: ring-fill 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Upload drag state */
+.drag-over {
+  border-color: var(--color-link) !important;
+  background-color: #d3e5ff20 !important;
+}
+
+/* Smooth transitions */
+.transition-base {
+  transition: all 0.2s ease;
+}
+
+/* Dark mode theme */
+@media (prefers-color-scheme: dark) {
+  :root.dark {
+    color-scheme: dark;
+  }
+}
+
+:root.dark {
+  --color-canvas: #0c1117;
+  --color-canvas-soft: #111820;
+  --color-canvas-soft-2: #1a2332;
+  --color-ink: #e8f0f8;
+  --color-body-text: #9ab0c0;
+  --color-mute: #6b8090;
+  --color-hairline: #1e2d3d;
+  --color-hairline-strong: #2e4155;
+  --color-accent-blue: #3b82f6;
+  --color-accent-green: #22d3a7;
+}
+
+:root.dark html,
+:root.dark body {
+  background-color: #0c1117;
+  color: #e8f0f8;
+}
+
+/* Dark mode specific styles */
+:root.dark .bg-white {
+  @apply bg-[#111820];
+}
+
+:root.dark .bg-\[\#fafafa\] {
+  @apply bg-[#1a2332];
+}
+
+:root.dark .bg-\[\#f5f5f5\] {
+  @apply bg-[#1e2d3d];
+}
+
+:root.dark .border-\[\#ebebeb\] {
+  @apply border-[#1e2d3d];
+}
+
+:root.dark .border-\[\#a1a1a1\] {
+  @apply border-[#2e4155];
+}
+
+:root.dark .text-\[\#171717\] {
+  @apply text-[#e8f0f8];
+}
+
+:root.dark .text-\[\#4d4d4d\] {
+  @apply text-[#9ab0c0];
+}
+
+:root.dark .text-\[\#888888\] {
+  @apply text-[#6b8090];
+}
+
+:root.dark .shadow-card,
+:root.dark .shadow-card-md,
+:root.dark .shadow-card-lg {
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.08) inset, 0 0 12px rgba(34, 211, 167, 0.03) !important;
+}
+
+:root.dark .mesh-gradient {
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 30%, #3b82f620 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 20%, #22d3a718 0%, transparent 55%),
+    radial-gradient(ellipse 70% 60% at 60% 80%, #0e8fd815 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 10% 80%, #10b98112 0%, transparent 50%),
+    radial-gradient(ellipse 40% 30% at 90% 70%, #3b82f610 0%, transparent 50%);
+  opacity: 0.5;
+}
+
+/* Dark mode accent glow on hover for cards */
+:root.dark .hover\:bg-\[\#fafafa\]:hover,
+:root.dark .hover\:bg-white:hover {
+  background-color: #1a2332 !important;
+}
+
+/* Blue-green selection in dark mode */
+:root.dark ::selection {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+/* Light mode subtle blue-green accents */
+:root:not(.dark) .bg-\[\#171717\] {
+  background-color: #0f1b2d;
+}
+
+:root:not(.dark) .hover\:bg-\[\#333\]:hover {
+  background-color: #1a2d45 !important;
+}
+
+/* Dark mode navbar */
+:root.dark header.sticky {
+  background-color: rgba(12, 17, 23, 0.92) !important;
+  border-color: #1e2d3d !important;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.05) inset !important;
+}
+
+/* Dark mode CTA band */
+:root.dark .bg-\[\#171717\] {
+  background-color: #0a1018 !important;
+}

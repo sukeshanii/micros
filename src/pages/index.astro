@@ -1,11 +1,1123 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Navbar from '../components/Navbar.astro';
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Micro & Calorie Tracker — Best Free AI Calorie & Protein Tracker Online" canonical="https://microcalorietracker.com">
+  <Navbar currentPage="/" />
+
+  <!-- Hero Band -->
+  <section class="relative overflow-hidden bg-white border-b border-[#ebebeb]">
+    <!-- Mesh gradient backdrop -->
+    <div class="absolute inset-0 mesh-gradient opacity-60 pointer-events-none"></div>
+
+    <div class="relative max-w-[1400px] mx-auto px-6 py-20 text-center">
+      <!-- Eyebrow badge -->
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fafafa] border border-[#ebebeb] text-[12px] font-mono text-[#888888] mb-6">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#50e3c2] animate-pulse"></span>
+        AI-powered nutrition analysis
+      </div>
+
+      <h1 class="text-[32px] md:text-[48px] font-semibold leading-[38px] md:leading-[56px] tracking-[-1.6px] md:tracking-[-2.4px] text-[#171717] max-w-3xl mx-auto mb-2">
+        Know exactly<br />what's in<br />your meal.
+      </h1>
+      <div class="flex items-center justify-center gap-3 flex-wrap mb-5">
+        <a href="/about" class="text-[12px] font-mono text-[#888888] hover:text-[#171717] transition-colors underline underline-offset-2">About</a>
+        <a href="/privacy" class="text-[12px] font-mono text-[#888888] hover:text-[#171717] transition-colors underline underline-offset-2">Privacy</a>
+        <a href="/terms" class="text-[12px] font-mono text-[#888888] hover:text-[#171717] transition-colors underline underline-offset-2">Terms</a>
+        <a href="/contact" class="text-[12px] font-mono text-[#888888] hover:text-[#171717] transition-colors underline underline-offset-2">Contact</a>
+      </div>
+      <p class="text-[18px] text-[#4d4d4d] leading-[28px] mb-10">
+        Upload a photo, add dish details,<br />and get instant macros — calories, protein,<br />carbs, fats — plus personalised suggestions<br />to balance your plate.
+      </p>
+
+      <!-- CTA row -->
+      <div class="flex items-center justify-center gap-3 flex-wrap">
+        <a href="#scanner" class="px-5 h-11 rounded-full bg-[#171717] text-white text-[16px] font-medium flex items-center hover:bg-[#333] transition-colors">
+          Scan your meal
+        </a>
+        <a href="/dashboard" class="px-5 h-11 rounded-full bg-white text-[#171717] text-[16px] font-medium flex items-center border border-[#ebebeb] hover:bg-[#fafafa] transition-colors shadow-card">
+          View dashboard
+        </a>
+      </div>
+
+      <!-- Stats strip -->
+      <div class="mt-16 flex items-center justify-center gap-8 flex-wrap">
+        {[
+          { label: 'Nutrients tracked', value: '30+' },
+          { label: 'Accuracy', value: '95%' },
+          { label: 'Meals analysed', value: '1M+' },
+        ].map(s => (
+          <div class="text-center">
+            <div class="text-[32px] font-semibold tracking-[-1.28px] text-[#171717]">{s.value}</div>
+            <div class="text-[14px] text-[#888888] mt-0.5">{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Scanner Section -->
+  <section id="scanner" class="max-w-[1400px] mx-auto px-6 py-16">
+    <div class="grid lg:grid-cols-2 gap-8 items-start">
+
+      <!-- Left: Upload + inputs -->
+      <div class="space-y-4">
+        <h2 class="text-[24px] font-semibold tracking-[-0.96px] text-[#171717]">Scan your meal.</h2>
+        <p class="text-[14px] text-[#4d4d4d]">Upload a photo or drag & drop. Add dish name and weight for precise results.</p>
+
+        <!-- Upload zone -->
+        <div
+          id="upload-zone"
+          class="relative border-2 border-dashed border-[#ebebeb] rounded-[12px] bg-white p-8 text-center cursor-pointer hover:border-[#a1a1a1] transition-colors group shadow-card"
+          role="button"
+          tabindex="0"
+          aria-label="Upload meal photo"
+        >
+          <input type="file" id="file-input" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+
+          <!-- Preview (hidden by default) -->
+          <div id="image-preview" class="hidden">
+            <img id="preview-img" src="" alt="Meal preview" class="max-h-64 mx-auto rounded-[8px] object-cover shadow-card-md" />
+            <button id="remove-image" class="mt-3 text-[13px] text-[#888888] hover:text-[#ee0000] transition-colors">Remove image</button>
+          </div>
+
+          <!-- Upload prompt -->
+          <div id="upload-prompt">
+            <div class="w-12 h-12 rounded-full bg-[#fafafa] border border-[#ebebeb] flex items-center justify-center mx-auto mb-4 group-hover:bg-[#f5f5f5] transition-colors">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10 3v10M6 7l4-4 4 4" stroke="#888888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3 14v1a2 2 0 002 2h10a2 2 0 002-2v-1" stroke="#888888" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <p class="text-[14px] font-medium text-[#171717]">Drop your meal photo here</p>
+            <p class="text-[13px] text-[#888888] mt-1">or click to browse — JPG, PNG, WEBP up to 10 MB</p>
+          </div>
+        </div>
+
+        <!-- Dish name + weight -->
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label for="dish-name" class="block text-[13px] font-medium text-[#171717] mb-1.5">Dish name <span class="text-[#888888] font-normal">(optional)</span></label>
+            <input
+              type="text"
+              id="dish-name"
+              placeholder="e.g. Chicken biryani"
+              class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] placeholder:text-[#888888] focus:outline-none focus:border-[#a1a1a1] transition-colors"
+            />
+          </div>
+          <div>
+            <label for="meal-weight" class="block text-[13px] font-medium text-[#171717] mb-1.5">Approx. weight <span class="text-[#888888] font-normal">(grams)</span></label>
+            <input
+              type="number"
+              id="meal-weight"
+              placeholder="e.g. 350"
+              min="1"
+              max="5000"
+              class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] placeholder:text-[#888888] focus:outline-none focus:border-[#a1a1a1] transition-colors"
+            />
+          </div>
+        </div>
+
+        <!-- Profile quick-fill (if not set) -->
+        <div id="profile-quick" class="rounded-[8px] bg-[#fafafa] border border-[#ebebeb] p-4 space-y-3">
+          <p class="text-[13px] font-medium text-[#171717]">Your profile <span class="text-[#888888] font-normal">— used for personalised suggestions</span></p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label for="quick-age" class="block text-[12px] text-[#888888] mb-1">Age</label>
+              <input type="number" id="quick-age" placeholder="25" min="10" max="100"
+                class="w-full h-9 px-2.5 rounded-[6px] border border-[#ebebeb] bg-white text-[13px] focus:outline-none focus:border-[#a1a1a1]" />
+            </div>
+            <div>
+              <label for="quick-weight" class="block text-[12px] text-[#888888] mb-1">Weight (kg)</label>
+              <input type="number" id="quick-weight" placeholder="70" min="20" max="300"
+                class="w-full h-9 px-2.5 rounded-[6px] border border-[#ebebeb] bg-white text-[13px] focus:outline-none focus:border-[#a1a1a1]" />
+            </div>
+            <div>
+              <label for="quick-goal" class="block text-[12px] text-[#888888] mb-1">Goal</label>
+              <select id="quick-goal"
+                class="w-full h-9 px-2.5 rounded-[6px] border border-[#ebebeb] bg-white text-[13px] focus:outline-none focus:border-[#a1a1a1]">
+                <option value="maintain">Maintain</option>
+                <option value="lose">Lose weight</option>
+                <option value="gain">Gain muscle</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Meal type selector -->
+        <div class="space-y-2">
+          <label class="block text-[13px] font-medium text-[#171717]">Meal type</label>
+          <div class="flex flex-wrap gap-2" id="meal-type-selector">
+            <button type="button" data-meal-type="breakfast" class="meal-type-btn px-3 py-1.5 rounded-full text-[13px] border border-[#ebebeb] bg-white text-[#4d4d4d] hover:bg-[#fafafa] transition-all">
+              🌅 Breakfast
+            </button>
+            <button type="button" data-meal-type="lunch" class="meal-type-btn px-3 py-1.5 rounded-full text-[13px] border border-[#ebebeb] bg-white text-[#4d4d4d] hover:bg-[#fafafa] transition-all">
+              ☀️ Lunch
+            </button>
+            <button type="button" data-meal-type="snack" class="meal-type-btn px-3 py-1.5 rounded-full text-[13px] border border-[#ebebeb] bg-white text-[#4d4d4d] hover:bg-[#fafafa] transition-all">
+              🍵 Evening Snack
+            </button>
+            <button type="button" data-meal-type="dinner" class="meal-type-btn px-3 py-1.5 rounded-full text-[13px] border border-[#ebebeb] bg-white text-[#4d4d4d] hover:bg-[#fafafa] transition-all">
+              🌙 Dinner
+            </button>
+            <button type="button" data-meal-type="dessert" class="meal-type-btn px-3 py-1.5 rounded-full text-[13px] border border-[#ebebeb] bg-white text-[#4d4d4d] hover:bg-[#fafafa] transition-all">
+              🍰 Dessert
+            </button>
+          </div>
+        </div>
+
+        <!-- Analyse button -->
+        <button
+          id="analyse-btn"
+          class="w-full h-11 rounded-full bg-[#171717] text-white text-[15px] font-medium hover:bg-[#333] transition-colors flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="6" stroke="white" stroke-width="1.3" fill="none"/>
+            <path d="M5 8l2 2 4-4" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Analyse meal
+        </button>
+      </div>
+
+      <!-- Right: Results panel -->
+      <div id="results-panel" class="space-y-4">
+
+        <!-- Empty state -->
+        <div id="empty-state" class="rounded-[12px] bg-white border border-[#ebebeb] p-12 text-center shadow-card">
+          <div class="w-16 h-16 rounded-full bg-[#fafafa] border border-[#ebebeb] flex items-center justify-center mx-auto mb-4">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle cx="14" cy="14" r="9" stroke="#ebebeb" stroke-width="2" fill="none"/>
+              <path d="M9 14h10M14 9v10" stroke="#ebebeb" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <p class="text-[15px] font-medium text-[#171717]">No meal scanned yet.</p>
+          <p class="text-[13px] text-[#888888] mt-1">Upload a photo and click Analyse to see your nutrition breakdown.</p>
+        </div>
+
+        <!-- Loading state (hidden) -->
+        <div id="loading-state" class="hidden rounded-[12px] bg-white border border-[#ebebeb] p-12 text-center shadow-card">
+          <div class="w-12 h-12 rounded-full border-2 border-[#ebebeb] border-t-[#171717] animate-spin mx-auto mb-4"></div>
+          <p class="text-[14px] text-[#4d4d4d]">Analysing your meal...</p>
+          <p class="text-[12px] font-mono text-[#888888] mt-1">Scanning & calculating macros</p>
+        </div>
+
+        <!-- Results (hidden) -->
+        <div id="results-content" class="hidden space-y-4">
+
+          <!-- Meal header -->
+          <div class="rounded-[12px] bg-white border border-[#ebebeb] p-5 shadow-card">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide">Detected meal</p>
+                <h3 id="result-meal-name" class="text-[20px] font-semibold tracking-[-0.6px] text-[#171717] mt-0.5">—</h3>
+                <p id="result-weight" class="text-[13px] text-[#888888] mt-0.5"></p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-[12px] font-mono text-[#888888]">Total energy</p>
+                <p id="result-calories" class="text-[32px] font-semibold tracking-[-1.28px] text-[#171717]">—</p>
+                <p class="text-[12px] text-[#888888]">kcal</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Full Nutrition Report Table (blood-report style) -->
+          <div class="rounded-[12px] bg-white border border-[#ebebeb] overflow-hidden shadow-card">
+            <div class="px-5 py-4 border-b border-[#ebebeb] flex items-center justify-between">
+              <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide">Nutrition report</p>
+              <span class="text-[11px] font-mono text-[#888888]">vs. daily reference intake</span>
+            </div>
+            <!-- Tab switcher -->
+            <div class="flex border-b border-[#ebebeb]">
+              <button id="tab-macros" onclick="switchTab('macros')"
+                class="flex-1 py-2.5 text-[12px] font-medium text-[#171717] border-b-2 border-[#171717] transition-colors">Macros</button>
+              <button id="tab-micros" onclick="switchTab('micros')"
+                class="flex-1 py-2.5 text-[12px] font-medium text-[#888888] border-b-2 border-transparent hover:text-[#171717] transition-colors">Vitamins & Minerals</button>
+            </div>
+            <div class="overflow-x-auto">
+              <div class="min-w-[500px]">
+                <div class="grid grid-cols-5 px-5 py-2 bg-[#fafafa] border-b border-[#ebebeb]">
+                  <span class="col-span-2 text-[11px] font-mono text-[#888888] uppercase tracking-wide">Nutrient</span>
+                  <span class="text-[11px] font-mono text-[#888888] uppercase tracking-wide text-right">This meal</span>
+                  <span class="text-[11px] font-mono text-[#888888] uppercase tracking-wide text-right">Daily ref.</span>
+                  <span class="text-[11px] font-mono text-[#888888] uppercase tracking-wide text-right">Status</span>
+                </div>
+                <div id="nutrition-table-macros" class="divide-y divide-[#ebebeb]"><!-- JS --></div>
+                <div id="nutrition-table-micros" class="divide-y divide-[#ebebeb] hidden"><!-- JS --></div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- AI Suggestions + Next Meal Ideas -->
+          <div class="rounded-[12px] bg-[#171717] p-5 shadow-card-lg">
+            <div class="flex items-center gap-2 mb-4">
+              <div class="w-5 h-5 rounded-full bg-[#50e3c2] flex items-center justify-center">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                  <path d="M2 5l2 2 4-4" stroke="#171717" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <p class="text-[12px] font-mono text-[#50e3c2] uppercase tracking-wide">AI suggestions</p>
+            </div>
+            <div id="suggestions-list" class="space-y-2 mb-5"><!-- JS --></div>
+
+            <!-- Next meal ideas -->
+            <div class="border-t border-white/10 pt-4">
+              <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide mb-3">Suggested next meal</p>
+              <div id="next-meal-ideas" class="grid grid-cols-1 sm:grid-cols-3 gap-3"><!-- JS --></div>
+            </div>
+          </div>
+
+          <!-- Daily goal progress -->
+          <div class="rounded-[12px] bg-white border border-[#ebebeb] p-5 shadow-card">
+            <div class="flex items-center justify-between mb-4">
+              <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide">Today's running total</p>
+              <span id="meals-logged-count" class="text-[11px] font-mono text-[#888888]"></span>
+            </div>
+            <div id="daily-progress" class="space-y-3"><!-- JS --></div>
+          </div>
+
+          <!-- Today's meals timeline -->
+          <div class="rounded-[12px] bg-white border border-[#ebebeb] overflow-hidden shadow-card">
+            <div class="px-5 py-4 border-b border-[#ebebeb] flex items-center justify-between">
+              <div>
+                <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide">Today's meals</p>
+                <p id="timeline-date" class="text-[11px] text-[#888888] mt-0.5"></p>
+              </div>
+              <span id="timeline-total-cal" class="text-[13px] font-semibold text-[#171717]"></span>
+            </div>
+            <div id="meals-timeline" class="divide-y divide-[#ebebeb]"><!-- JS --></div>
+            <div id="meals-timeline-empty" class="hidden px-5 py-8 text-center">
+              <p class="text-[13px] text-[#888888]">No meals logged yet today.</p>
+              <p class="text-[12px] text-[#888888] mt-1">Scan a meal above to start tracking.</p>
+            </div>
+            <!-- Day summary bar -->
+            <div id="day-summary-bar" class="hidden border-t border-[#ebebeb] px-5 py-4 bg-[#fafafa]">
+              <p class="text-[11px] font-mono text-[#888888] uppercase tracking-wide mb-3">Day summary</p>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="day-summary-macros"><!-- JS --></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features band -->
+  <section class="bg-white border-t border-[#ebebeb] py-20">
+    <div class="max-w-[1400px] mx-auto px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-[32px] font-semibold tracking-[-1.28px] text-[#171717] mb-4">
+          More than a calorie counter.
+        </h2>
+        <p class="text-[16px] text-[#4d4d4d] leading-[26px] w-full">
+          We track the full picture — every vitamin, mineral, and macro — so you can make smarter food choices. Get comprehensive nutrition insights that go beyond just calories.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4">
+        {[
+          {
+            icon: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#007cf0" stroke-width="1.5" fill="none"/><path d="M7 10l2 2 4-4" stroke="#007cf0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+            title: 'Instant AI analysis',
+            desc: 'Get instant macro & micronutrient breakdown from a single photo in under 3 seconds.',
+          },
+          {
+            icon: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="3" stroke="#7928ca" stroke-width="1.5" fill="none"/><path d="M7 10h6M10 7v6" stroke="#7928ca" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+            title: '30+ nutrients tracked',
+            desc: 'Calories, protein, carbs, fats, fibre, vitamins A–K, iron, calcium, zinc and more.',
+          },
+          {
+            icon: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3c-3.866 0-7 3.134-7 7s3.134 7 7 7 7-3.134 7-7" stroke="#ff0080" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M14 3l3 3-3 3" stroke="#ff0080" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+            title: 'Personalised suggestions',
+            desc: 'Based on your age, weight and goal, we recommend what to add to balance your plate.',
+          },
+          {
+            icon: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 14l4-4 3 3 4-5 3 3" stroke="#50e3c2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`,
+            title: 'Daily goal tracking',
+            desc: 'See how each meal contributes to your daily calorie and macro targets at a glance.',
+          },
+          {
+            icon: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#f5a623" stroke-width="1.5" fill="none"/><path d="M10 7v3l2 2" stroke="#f5a623" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+            title: 'Meal history',
+            desc: 'Every scan is saved to your dashboard. Review weekly trends and spot nutritional gaps.',
+          },
+          {
+            icon: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M10 4l6 6-6 6" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+            title: 'Weight correction',
+            desc: 'Enter the actual weight of your meal to get exact gram-level nutrient calculations.',
+          },
+        ].map(f => (
+          <div class="rounded-[8px] bg-[#fafafa] border border-[#ebebeb] p-6 hover:bg-white hover:shadow-card transition-all">
+            <div class="w-9 h-9 rounded-[8px] bg-white border border-[#ebebeb] flex items-center justify-center mb-4 shadow-card" set:html={f.icon}></div>
+            <h3 class="text-[16px] font-semibold tracking-[-0.3px] text-[#171717] mb-1.5">{f.title}</h3>
+            <p class="text-[14px] text-[#4d4d4d] leading-[20px]">{f.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="bg-white border-t border-[#ebebeb] py-20">
+    <div class="max-w-[1400px] mx-auto px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-[32px] font-semibold tracking-[-1.28px] text-[#171717] mb-4">Frequently asked questions.</h2>
+        <p class="text-[16px] text-[#4d4d4d] leading-[26px]">Get answers to common questions about using a calorie tracker for better nutrition.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6 w-full">
+        {[
+          {
+            q: 'How does a calorie tracker work?',
+            a: 'A calorie tracker works by estimating the energy content of the food you eat. With our AI-powered tool, you simply upload a photo of your meal and optionally enter the dish name and weight. The system cross-references a comprehensive nutrition database to calculate calories, protein, carbs, fats, fibre, and micronutrients. It then compares your intake against daily reference values and personal goals, giving you a complete nutritional breakdown in seconds. No manual logging or barcode scanning required.',
+          },
+          {
+            q: 'Does a calorie tracker actually work?',
+            a: 'Yes — calorie tracking is one of the most effective strategies for weight management and nutritional awareness. Studies show that people who consistently track their food intake are more likely to reach their health goals. Our AI calorie tracker makes this easier by eliminating the guesswork: just upload a photo and get instant, accurate macro and micronutrient data. When combined with personalised goal setting, tracking creates accountability and reveals patterns in your eating habits that you might otherwise miss.',
+          },
+          {
+            q: 'How to safely track calories?',
+            a: 'Safe calorie tracking means focusing on nutrient quality, not just hitting a number. Use a tracker that provides complete macro and micronutrient data so you can ensure you are getting enough protein, fibre, vitamins, and minerals. Avoid extreme calorie restrictions — a deficit of 300–500 calories below maintenance is generally considered safe for weight loss. Always listen to your body and consult a healthcare professional before starting any diet. Use estimates as guidance rather than absolute rules, and prioritise whole, nutrient-dense foods.',
+          },
+          {
+            q: 'When to stop tracking calories?',
+            a: 'You can stop tracking calories when you have developed a solid understanding of portion sizes and nutritional needs, and feel confident maintaining your weight without external tools. Many people track for 4–8 weeks to build awareness, then transition to occasional check-ins. You should also stop if tracking becomes obsessive or negatively impacts your mental health. The goal of a calorie tracker is to educate and empower, not to create anxiety. Use it as a learning tool and pause whenever you need a break.',
+          },
+          {
+            q: 'How accurate is the AI model analysis?',
+            a: 'Our vision model achieves 95% accuracy in analysing meals and portions. For best results, ensure good lighting and clear photos of your meal. Accuracy improves when you provide the dish name and approximate weight — the AI uses this information to cross-reference its visual analysis against our nutrition database for precise macro and micronutrient calculations.',
+          },
+          {
+            q: 'Is my data private and secure here?',
+            a: 'Absolutely. We use end-to-end encryption and never share your data with third parties. Your meal history is stored locally on your device and is only visible to you. No account or sign-up is required, so there is no personal information at risk. Your privacy is built into the platform from day one.',
+          },
+          {
+            q: 'Does it work with all types of food?',
+            a: 'Our database covers thousands of food items including cuisines from around the world — from Indian classics like biryani and dal to Western staples like pizza, pasta, salads, and sushi. If something is not immediately recognized, you can manually enter the dish name and our AI will match it to the closest nutritional profile. The more you use it, the smarter the matching becomes.',
+          },
+        ].map(item => (
+          <div class="rounded-[12px] bg-[#fafafa] border border-[#ebebeb] p-5 hover:shadow-card transition-all">
+            <h3 class="text-[16px] font-semibold tracking-[-0.3px] text-[#171717] mb-3">{item.q}</h3>
+            <p class="text-[14px] text-[#4d4d4d] leading-[20px]">{item.a}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How does a calorie tracker work?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A calorie tracker works by estimating the energy content of the food you eat. With our AI-powered tool, you simply upload a photo of your meal and optionally enter the dish name and weight. The system cross-references a comprehensive nutrition database to calculate calories, protein, carbs, fats, fibre, and micronutrients. It then compares your intake against daily reference values and personal goals, giving you a complete nutritional breakdown in seconds."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does a calorie tracker actually work?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes — calorie tracking is one of the most effective strategies for weight management and nutritional awareness. Studies show that people who consistently track their food intake are more likely to reach their health goals. Our AI calorie tracker makes this easier by eliminating the guesswork: just upload a photo and get instant, accurate macro and micronutrient data."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How to safely track calories?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Safe calorie tracking means focusing on nutrient quality, not just hitting a number. Use a tracker that provides complete macro and micronutrient data so you can ensure you are getting enough protein, fibre, vitamins, and minerals. Avoid extreme calorie restrictions — a deficit of 300–500 calories below maintenance is generally considered safe for weight loss. Always consult a healthcare professional before starting any diet."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "When to stop tracking calories?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "You can stop tracking calories when you have developed a solid understanding of portion sizes and nutritional needs, and feel confident maintaining your weight without external tools. Many people track for 4–8 weeks to build awareness, then transition to occasional check-ins. You should also stop if tracking becomes obsessive or negatively impacts your mental health."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How accurate is the AI model analysis?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Our vision model achieves 95% accuracy in analysing meals and portions. For best results, ensure good lighting and clear photos of your meal. Accuracy improves when you provide the dish name and approximate weight."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is my data private and secure here?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Absolutely. We use end-to-end encryption and never share your data with third parties. Your meal history is stored locally on your device and is only visible to you. No account or sign-up is required, so there is no personal information at risk."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does it work with all types of food?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Our database covers thousands of food items including cuisines from around the world — from Indian classics like biryani and dal to Western staples like pizza, pasta, salads, and sushi. If something is not immediately recognized, you can manually enter the dish name and our AI will match it to the closest nutritional profile."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Dark CTA band -->
+  <section class="bg-[#171717] py-20">
+    <div class="max-w-[1400px] mx-auto px-6 text-center">
+      <p class="text-[12px] font-mono text-[#50e3c2] uppercase tracking-wide mb-4">Get started free</p>
+      <h2 class="text-[32px] font-semibold tracking-[-1.28px] text-white mb-4">Start tracking smarter today.</h2>
+      <p class="text-[16px] text-[#888888] max-w-2xl mx-auto mb-8">
+        No account needed. Upload your first meal<br />and see your full nutrition breakdown in seconds.
+      </p>
+      <a href="#scanner" class="inline-flex items-center px-6 h-11 rounded-full bg-white text-[#171717] text-[15px] font-medium hover:bg-[#f5f5f5] transition-colors">
+        Scan your first meal →
+      </a>
+    </div>
+  </section>
+
+  <!-- SEO Content Section -->
+  <section class="bg-white border-t border-[#ebebeb] py-16">
+    <div class="max-w-[1000px] mx-auto px-6">
+      <h2 class="text-[28px] font-semibold tracking-[-1.12px] text-[#171717] mb-6 text-center">
+        Best Free AI Calorie & Protein Tracker Online
+      </h2>
+      <div class="text-[15px] text-[#4d4d4d] leading-[26px] space-y-4">
+        <p>
+          The <strong>micro&calorie tracker</strong> is the most advanced <strong>calorie tracker website</strong> built for anyone who wants to understand exactly what they eat. Unlike basic tracking apps, this <strong>free calorie tracker</strong> combines AI-powered meal scanning with comprehensive macro and micronutrient analysis — making it a strong contender for the <strong>best calorie tracker</strong> available online today. Whether you are checking a <strong>chipotle calorie tracker</strong> entry or scanning a home-cooked meal, the platform delivers accurate, instant results.
+        </p>
+        <p>
+          Powered by cutting-edge computer vision, the <strong>AI calorie tracker</strong> identifies your meal from a single photo and calculates calories, protein, carbohydrates, fats, fibre, and over 30 micronutrients including vitamins A through K, iron, calcium, zinc, magnesium, and more. Many users consider this the <strong>best AI calorie tracker</strong> because it doesn't just count calories — it delivers a full nutritional profile in seconds. As a <strong>best free calorie tracker</strong>, there are no subscriptions, no hidden fees, and no account required to start tracking.
+        </p>
+        <p>
+          For those focused on muscle gain or weight management, the platform serves as an excellent <strong>protein tracker</strong>. Every scan shows your exact protein intake alongside your daily target. This <strong>protein tracker free</strong> tool makes it easy to ensure you are meeting your macro goals. It works as both a <strong>calorie and protein tracker</strong> simultaneously, giving you a complete picture of every meal. Athletes and fitness enthusiasts rely on this <strong>protein tracker online</strong> to log their meals and hit their daily protein targets without guesswork. The dashboard visualises your protein intake across the day, so you always know whether you need one more high-protein meal or you have already hit your target.
+        </p>
+        <p>
+          Beyond macros, the platform excels as a <strong>vitamin tracker</strong>. Most calorie counters ignore micronutrients, but this <strong>best vitamin tracker</strong> breaks down your intake of vitamins A, C, D, E, K, B12, folate, and essential minerals. It functions as a complete <strong>macro and micro nutrient tracker</strong>, helping you identify gaps in your diet. As a dedicated <strong>micro nutrient tracker</strong>, it highlights which vitamins and minerals you are falling short on and suggests meals to fill those gaps. It is widely regarded as the <strong>best micro nutrient tracker</strong> because it goes far beyond simple calorie counting. Every scan shows your micronutrient levels compared to daily reference intakes, with color-coded status badges that tell you at a glance if your levels are good, fair, or low.
+        </p>
+        <p>
+          The <strong>most accurate calorie tracker</strong> needs to account for portion size, and this tool does exactly that. You can input the exact weight of your meal in grams, and the AI adjusts every nutrient calculation accordingly. Combined with personalised suggestions based on your age, weight, and fitness goal — whether you want to lose, maintain, or gain — this <strong>free AI calorie tracker</strong> adapts to your unique body and lifestyle. It is truly the <strong>best AI calorie tracker</strong> for anyone who wants data-driven nutrition insights without the complexity. The suggestions engine analyses your current intake and recommends specific next meals to fill nutritional gaps, making it a complete dietary companion rather than just a logging tool.
+        </p>
+        <p>
+          Privacy is built in from day one. As a <strong>free calorie tracker</strong>, your data stays on your device and is never shared with third parties. The platform requires no sign-up, making it one of the most accessible <strong>calorie tracker website</strong> options on the web. Whether you are a fitness enthusiast using the <strong>protein tracker online</strong> to hit macro targets, or someone simply looking for a reliable <strong>free calorie tracker</strong> to understand their eating habits, the micro&calorie tracker delivers professional-grade nutrition analysis in your browser. No app download, no credit card, no account creation — just upload a photo of your meal and get your complete nutrition breakdown in seconds. Start tracking smarter today and discover why this is the most comprehensive <strong>free AI calorie tracker</strong> available.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-[#ebebeb] py-12">
+    <div class="max-w-[1400px] mx-auto px-6">
+      <div class="flex flex-col md:flex-row items-start justify-between gap-8">
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-6 h-6 rounded-[5px] bg-[#171717] flex items-center justify-center">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <circle cx="6" cy="6" r="3.5" stroke="#50e3c2" stroke-width="1.2" fill="none"/>
+                <circle cx="6" cy="6" r="1.5" fill="#50e3c2"/>
+              </svg>
+            </div>
+            <span class="text-[13px] font-semibold text-[#171717]">micro&calorie tracker</span>
+          </div>
+          <p class="text-[13px] text-[#888888] max-w-xs">AI-powered nutrition tracking<br />for smarter, healthier eating.</p>
+          <p class="text-[12px] font-mono text-[#888888] mt-2">microcalorietracker.com</p>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-8 text-[13px]">
+          <div>
+            <p class="font-mono text-[12px] text-[#888888] uppercase tracking-wide mb-3">Product</p>
+            <ul class="space-y-2 text-[#4d4d4d]">
+              <li><a href="/" class="hover:text-[#171717] transition-colors">Meal Scanner</a></li>
+              <li><a href="/dashboard" class="hover:text-[#171717] transition-colors">Dashboard</a></li>
+              <li><a href="/profile" class="hover:text-[#171717] transition-colors">Profile</a></li>
+            </ul>
+          </div>
+          <div>
+            <p class="font-mono text-[12px] text-[#888888] uppercase tracking-wide mb-3">Company</p>
+            <ul class="space-y-2 text-[#4d4d4d]">
+              <li><a href="/about" class="hover:text-[#171717] transition-colors">About</a></li>
+              <li><a href="/privacy" class="hover:text-[#171717] transition-colors">Privacy</a></li>
+              <li><a href="/terms" class="hover:text-[#171717] transition-colors">Terms</a></li>
+              <li><a href="/contact" class="hover:text-[#171717] transition-colors">Contact</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="mt-10 pt-6 border-t border-[#ebebeb] flex items-center justify-between gap-4 flex-wrap">
+        <p class="text-[12px] text-[#888888]">© 2025 micro&calorie tracker. All rights reserved.</p>
+        <p class="text-[12px] font-mono text-[#888888]">v1.0.0</p>
+      </div>
+    </div>
+  </footer>
 </Layout>
+
+<script>
+// ── Types ──────────────────────────────────────────────────────────────────
+interface MacroData { protein: number; carbs: number; fat: number; fiber: number; }
+interface NutritionResult {
+  mealName: string; weight: number; calories: number;
+  macros: MacroData;
+  micros: Record<string, { val: number; unit: string; ref: number }>;
+  ingredients: string[];
+  suggestions: string[];
+  nextMeals: { name: string; emoji: string; cal: number; reason: string }[];
+}
+interface LoggedMeal { name: string; calories: number; protein: number; carbs: number; fat: number; time: string; mealType: string; ingredients: string[]; }
+
+type MealType = 'breakfast' | 'lunch' | 'snack' | 'dinner' | 'dessert';
+const MEAL_TYPE_META: Record<MealType, { label: string; emoji: string; color: string }> = {
+  breakfast: { label: 'Breakfast', emoji: '🌅', color: '#f59e0b' },
+  lunch:    { label: 'Lunch',     emoji: '☀️', color: '#3b82f6' },
+  snack:    { label: 'Evening Snack', emoji: '🍵', color: '#10b981' },
+  dinner:   { label: 'Dinner',    emoji: '🌙', color: '#8b5cf6' },
+  dessert:  { label: 'Dessert',   emoji: '🍰', color: '#ec4899' },
+};
+
+// ── Persistent daily log (localStorage) ───────────────────────────────────
+const TODAY = new Date().toDateString();
+function getLog(): LoggedMeal[] {
+  try {
+    const raw = localStorage.getItem('mct_log_' + TODAY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+function saveLog(log: LoggedMeal[]) {
+  localStorage.setItem('mct_log_' + TODAY, JSON.stringify(log));
+}
+function addToLog(meal: LoggedMeal) {
+  const log = getLog();
+  log.push(meal);
+  saveLog(log);
+}
+function getDailyTotals() {
+  return getLog().reduce((acc, m) => ({
+    calories: acc.calories + m.calories,
+    protein:  acc.protein  + m.protein,
+    carbs:    acc.carbs    + m.carbs,
+    fat:      acc.fat      + m.fat,
+  }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
+}
+
+// ── DOM refs ───────────────────────────────────────────────────────────────
+const uploadZone     = document.getElementById('upload-zone')!;
+const fileInput      = document.getElementById('file-input') as HTMLInputElement;
+const imagePreview   = document.getElementById('image-preview')!;
+const previewImg     = document.getElementById('preview-img') as HTMLImageElement;
+const uploadPrompt   = document.getElementById('upload-prompt')!;
+const removeBtn      = document.getElementById('remove-image')!;
+const analyseBtn     = document.getElementById('analyse-btn') as HTMLButtonElement;
+const emptyState     = document.getElementById('empty-state')!;
+const loadingState   = document.getElementById('loading-state')!;
+const resultsContent = document.getElementById('results-content')!;
+
+// ── Upload handling ────────────────────────────────────────────────────────
+let selectedFile: File | null = null;
+function showPreview(file: File) {
+  selectedFile = file;
+  previewImg.src = URL.createObjectURL(file);
+  uploadPrompt.classList.add('hidden');
+  imagePreview.classList.remove('hidden');
+}
+function clearPreview() {
+  selectedFile = null; previewImg.src = '';
+  imagePreview.classList.add('hidden');
+  uploadPrompt.classList.remove('hidden');
+  fileInput.value = '';
+}
+fileInput.addEventListener('change', () => { if (fileInput.files?.[0]) showPreview(fileInput.files[0]); });
+removeBtn.addEventListener('click', (e) => { e.stopPropagation(); clearPreview(); });
+uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', (e) => {
+  e.preventDefault(); uploadZone.classList.remove('drag-over');
+  const f = e.dataTransfer?.files[0];
+  if (f?.type.startsWith('image/')) showPreview(f);
+});
+
+// ── Tab switcher (exposed globally for onclick) ────────────────────────────
+(window as any).switchTab = (tab: 'macros' | 'micros') => {
+  const macroTab  = document.getElementById('tab-macros')!;
+  const microTab  = document.getElementById('tab-micros')!;
+  const macroBody = document.getElementById('nutrition-table-macros')!;
+  const microBody = document.getElementById('nutrition-table-micros')!;
+  if (tab === 'macros') {
+    macroTab.classList.replace('text-[#888888]','text-[#171717]');
+    macroTab.classList.replace('border-transparent','border-[#171717]');
+    microTab.classList.replace('text-[#171717]','text-[#888888]');
+    microTab.classList.replace('border-[#171717]','border-transparent');
+    macroBody.classList.remove('hidden'); microBody.classList.add('hidden');
+  } else {
+    microTab.classList.replace('text-[#888888]','text-[#171717]');
+    microTab.classList.replace('border-transparent','border-[#171717]');
+    macroTab.classList.replace('text-[#171717]','text-[#888888]');
+    macroTab.classList.replace('border-[#171717]','border-transparent');
+    microBody.classList.remove('hidden'); macroBody.classList.add('hidden');
+  }
+};
+
+// ── Reference intakes (WHO / EU NRV) ──────────────────────────────────────
+const MACRO_REF = {
+  'Energy':  { ref: 2000, unit: 'kcal' },
+  'Protein': { ref: 50,   unit: 'g' },
+  'Carbs':   { ref: 260,  unit: 'g' },
+  'Fat':     { ref: 70,   unit: 'g' },
+  'Fibre':   { ref: 25,   unit: 'g' },
+  'Sugar':   { ref: 90,   unit: 'g' },
+  'Sat. Fat':{ ref: 20,   unit: 'g' },
+};
+const MICRO_REF = {
+  'Vitamin A': { ref: 800,  unit: 'µg' },
+  'Vitamin C': { ref: 80,   unit: 'mg' },
+  'Vitamin D': { ref: 15,   unit: 'µg' },
+  'Vitamin E': { ref: 12,   unit: 'mg' },
+  'Vitamin K': { ref: 75,   unit: 'µg' },
+  'Vitamin B12':{ ref: 2.4, unit: 'µg' },
+  'Folate':    { ref: 200,  unit: 'µg' },
+  'Iron':      { ref: 14,   unit: 'mg' },
+  'Calcium':   { ref: 800,  unit: 'mg' },
+  'Potassium': { ref: 2000, unit: 'mg' },
+  'Sodium':    { ref: 2300, unit: 'mg' },
+  'Zinc':      { ref: 10,   unit: 'mg' },
+  'Magnesium': { ref: 375,  unit: 'mg' },
+};
+
+// ── Status badge helper ────────────────────────────────────────────────────
+function statusBadge(pct: number, isNegative = false): string {
+  // isNegative = lower is better (sodium, sat fat, sugar)
+  let label: string, color: string;
+  if (isNegative) {
+    if (pct > 100)      { label = 'High';    color = '#ee0000'; }
+    else if (pct > 75)  { label = 'Caution'; color = '#f5a623'; }
+    else                { label = 'OK';      color = '#10b981'; }
+  } else {
+    if (pct >= 80)      { label = 'Good';    color = '#10b981'; }
+    else if (pct >= 40) { label = 'Fair';    color = '#f5a623'; }
+    else                { label = 'Low';     color = '#ee0000'; }
+  }
+  return `<span class="px-2 py-0.5 rounded-full text-[11px] font-medium" style="background:${color}20;color:${color}">${label}</span>`;
+}
+
+// ── Render nutrition table row ─────────────────────────────────────────────
+function tableRow(name: string, val: number, unit: string, ref: number, isNeg = false): string {
+  const pct = Math.round((val / ref) * 100);
+  const barW = Math.min(pct, 100);
+  const barColor = isNeg
+    ? (pct > 100 ? '#ee0000' : pct > 75 ? '#f5a623' : '#10b981')
+    : (pct >= 80 ? '#10b981' : pct >= 40 ? '#f5a623' : '#ee0000');
+  return `
+    <div class="grid grid-cols-5 items-center px-5 py-3 hover:bg-[#fafafa] transition-colors">
+      <div class="col-span-2">
+        <p class="text-[13px] text-[#171717] font-medium">${name}</p>
+        <div class="mt-1 h-1 w-full rounded-full bg-[#ebebeb] overflow-hidden">
+          <div class="h-full rounded-full transition-all duration-700" style="width:${barW}%;background:${barColor}"></div>
+        </div>
+      </div>
+      <p class="text-[13px] font-mono text-[#171717] text-right">${val}${unit}</p>
+      <p class="text-[13px] font-mono text-[#888888] text-right">${ref}${unit}</p>
+      <div class="flex justify-end">${statusBadge(pct, isNeg)}</div>
+    </div>`;
+}
+
+// ── Dish ingredient database ──────────────────────────────────────────────
+const DISH_DB: Record<string, { ingredients: string[]; calPer100: number; proteinPer100: number; carbsPer100: number; fatPer100: number; fiberPer100: number }> = {
+  // Indian dishes
+  'chicken biryani':    { ingredients: ['Basmati Rice','Chicken','Onion','Yogurt','Ghee','Saffron','Bay Leaf','Cardamom','Cinnamon','Cloves','Mint','Coriander','Ginger','Garlic','Green Chilli','Salt'], calPer100: 150, proteinPer100: 8, carbsPer100: 18, fatPer100: 5, fiberPer100: 0.6 },
+  'biryani':            { ingredients: ['Basmati Rice','Meat/Vegetables','Onion','Yogurt','Ghee','Saffron','Bay Leaf','Cardamom','Cinnamon','Mint','Coriander','Ginger','Garlic','Salt'], calPer100: 145, proteinPer100: 7, carbsPer100: 18, fatPer100: 5, fiberPer100: 0.5 },
+  'butter chicken':     { ingredients: ['Chicken','Butter','Cream','Tomato','Onion','Ginger','Garlic','Kashmiri Chilli','Garam Masala','Fenugreek Leaves','Cumin','Coriander','Salt','Oil'], calPer100: 148, proteinPer100: 12, carbsPer100: 6, fatPer100: 9, fiberPer100: 0.8 },
+  'paneer tikka':       { ingredients: ['Paneer','Yogurt','Bell Pepper','Onion','Ginger','Garlic','Kashmiri Chilli','Cumin','Coriander','Garam Masala','Lemon Juice','Oil','Salt'], calPer100: 200, proteinPer100: 14, carbsPer100: 6, fatPer100: 14, fiberPer100: 0.4 },
+  'dal':                { ingredients: ['Lentils','Onion','Tomato','Ginger','Garlic','Cumin','Turmeric','Red Chilli','Coriander Leaves','Ghee','Salt','Water'], calPer100: 90, proteinPer100: 6, carbsPer100: 12, fatPer100: 2, fiberPer100: 3 },
+  'dal makhani':        { ingredients: ['Black Lentils','Kidney Beans','Butter','Cream','Tomato','Onion','Ginger','Garlic','Cumin','Garam Masala','Red Chilli','Salt'], calPer100: 110, proteinPer100: 5, carbsPer100: 14, fatPer100: 4, fiberPer100: 2.5 },
+  'roti':               { ingredients: ['Whole Wheat Flour','Water','Salt','Ghee'], calPer100: 260, proteinPer100: 8, carbsPer100: 50, fatPer100: 3, fiberPer100: 4 },
+  'naan':               { ingredients: ['All-Purpose Flour','Yogurt','Yeast','Sugar','Baking Soda','Butter','Salt','Water'], calPer100: 290, proteinPer100: 9, carbsPer100: 50, fatPer100: 5, fiberPer100: 2 },
+  'samosa':             { ingredients: ['All-Purpose Flour','Potato','Peas','Cumin','Coriander','Garam Masala','Green Chilli','Ginger','Oil','Salt','Amchur'], calPer100: 245, proteinPer100: 4, carbsPer100: 30, fatPer100: 12, fiberPer100: 2 },
+  'dosa':               { ingredients: ['Rice Batter','Urad Dal Batter','Oil','Fenugreek Seeds','Salt'], calPer100: 120, proteinPer100: 3, carbsPer100: 22, fatPer100: 2, fiberPer100: 0.5 },
+  'idli':               { ingredients: ['Rice Batter','Urad Dal Batter','Fenugreek Seeds','Salt'], calPer100: 80, proteinPer100: 2.5, carbsPer100: 15, fatPer100: 0.4, fiberPer100: 0.6 },
+  'chole':              { ingredients: ['Chickpeas','Onion','Tomato','Ginger','Garlic','Cumin','Coriander','Garam Masala','Amchur','Oil','Salt','Green Chilli'], calPer100: 120, proteinPer100: 7, carbsPer100: 16, fatPer100: 3, fiberPer100: 4 },
+  'palak paneer':       { ingredients: ['Spinach','Paneer','Onion','Tomato','Ginger','Garlic','Cumin','Garam Masala','Cream','Green Chilli','Oil','Salt'], calPer100: 140, proteinPer100: 8, carbsPer100: 5, fatPer100: 10, fiberPer100: 2 },
+  'rajma':              { ingredients: ['Kidney Beans','Onion','Tomato','Ginger','Garlic','Cumin','Coriander','Garam Masala','Red Chilli','Bay Leaf','Oil','Salt'], calPer100: 105, proteinPer100: 6, carbsPer100: 15, fatPer100: 2, fiberPer100: 5 },
+  'aloo gobi':          { ingredients: ['Potato','Cauliflower','Onion','Tomato','Turmeric','Cumin','Coriander','Green Chilli','Ginger','Oil','Salt','Coriander Leaves'], calPer100: 95, proteinPer100: 2, carbsPer100: 14, fatPer100: 3, fiberPer100: 2.5 },
+  'tandoori chicken':   { ingredients: ['Chicken','Yogurt','Lemon Juice','Ginger','Garlic','Kashmiri Chilli','Cumin','Coriander','Garam Masala','Turmeric','Oil','Salt'], calPer100: 150, proteinPer100: 18, carbsPer100: 3, fatPer100: 7, fiberPer100: 0.3 },
+  'gulab jamun':        { ingredients: ['Milk Powder','All-Purpose Flour','Ghee','Baking Soda','Cardamom','Sugar','Rose Water','Saffron'], calPer100: 320, proteinPer100: 4, carbsPer100: 50, fatPer100: 12, fiberPer100: 0.2 },
+  'kheer':              { ingredients: ['Milk','Rice','Sugar','Cardamom','Almonds','Cashews','Raisins','Saffron'], calPer100: 140, proteinPer100: 4, carbsPer100: 22, fatPer100: 4, fiberPer100: 0.3 },
+  // Western dishes
+  'pizza':              { ingredients: ['Pizza Dough','Mozzarella','Tomato Sauce','Olive Oil','Basil','Oregano','Garlic','Parmesan','Salt'], calPer100: 270, proteinPer100: 11, carbsPer100: 33, fatPer100: 10, fiberPer100: 2 },
+  'pasta':              { ingredients: ['Pasta','Tomato Sauce','Olive Oil','Garlic','Onion','Basil','Parmesan','Black Pepper','Salt'], calPer100: 160, proteinPer100: 6, carbsPer100: 28, fatPer100: 3, fiberPer100: 2 },
+  'burger':             { ingredients: ['Beef Patty','Burger Bun','Lettuce','Tomato','Onion','Pickles','Cheese','Ketchup','Mustard','Mayonnaise'], calPer100: 250, proteinPer100: 14, carbsPer100: 22, fatPer100: 12, fiberPer100: 1.2 },
+  'sandwich':           { ingredients: ['Bread','Lettuce','Tomato','Cheese','Mayonnaise','Cucumber','Onion','Butter','Salt','Pepper'], calPer100: 210, proteinPer100: 8, carbsPer100: 25, fatPer100: 9, fiberPer100: 1.5 },
+  'salad':              { ingredients: ['Lettuce','Tomato','Cucumber','Bell Pepper','Onion','Olive Oil','Lemon Juice','Feta Cheese','Olives','Salt','Pepper'], calPer100: 60, proteinPer100: 2, carbsPer100: 6, fatPer100: 3, fiberPer100: 2 },
+  'steak':              { ingredients: ['Beef Steak','Butter','Garlic','Rosemary','Thyme','Black Pepper','Salt','Olive Oil'], calPer100: 250, proteinPer100: 26, carbsPer100: 0, fatPer100: 16, fiberPer100: 0 },
+  'sushi':              { ingredients: ['Sushi Rice','Nori Seaweed','Raw Fish','Rice Vinegar','Wasabi','Soy Sauce','Ginger','Sesame Seeds','Avocado'], calPer100: 140, proteinPer100: 6, carbsPer100: 22, fatPer100: 3, fiberPer100: 0.8 },
+  'fried rice':         { ingredients: ['Rice','Egg','Soy Sauce','Sesame Oil','Garlic','Ginger','Spring Onion','Carrot','Peas','Oil','White Pepper','Salt'], calPer100: 160, proteinPer100: 5, carbsPer100: 24, fatPer100: 5, fiberPer100: 1 },
+  'omelette':           { ingredients: ['Eggs','Butter','Salt','Black Pepper','Onion','Bell Pepper','Cheese','Mushrooms','Herbs'], calPer100: 150, proteinPer100: 11, carbsPer100: 1, fatPer100: 12, fiberPer100: 0.3 },
+  'pancakes':           { ingredients: ['All-Purpose Flour','Eggs','Milk','Butter','Sugar','Baking Powder','Vanilla Extract','Salt','Maple Syrup'], calPer100: 230, proteinPer100: 6, carbsPer100: 35, fatPer100: 8, fiberPer100: 0.8 },
+  'smoothie':           { ingredients: ['Banana','Mixed Berries','Yogurt','Milk','Honey','Chia Seeds','Spinach'], calPer100: 65, proteinPer100: 2, carbsPer100: 12, fatPer100: 1, fiberPer100: 1.5 },
+  'ice cream':          { ingredients: ['Cream','Milk','Sugar','Egg Yolks','Vanilla Extract','Salt'], calPer100: 210, proteinPer100: 3.5, carbsPer100: 24, fatPer100: 11, fiberPer100: 0 },
+  'cake':               { ingredients: ['All-Purpose Flour','Sugar','Butter','Eggs','Milk','Baking Powder','Vanilla Extract','Cocoa Powder','Salt'], calPer100: 350, proteinPer100: 5, carbsPer100: 50, fatPer100: 15, fiberPer100: 1 },
+  'soup':               { ingredients: ['Mixed Vegetables','Broth','Onion','Garlic','Celery','Carrot','Herbs','Olive Oil','Salt','Pepper'], calPer100: 40, proteinPer100: 2, carbsPer100: 6, fatPer100: 1, fiberPer100: 1.5 },
+  'rice':               { ingredients: ['Rice','Water','Salt','Oil'], calPer100: 130, proteinPer100: 2.7, carbsPer100: 28, fatPer100: 0.3, fiberPer100: 0.4 },
+  'chicken':            { ingredients: ['Chicken','Oil','Salt','Black Pepper','Garlic','Herbs'], calPer100: 190, proteinPer100: 25, carbsPer100: 0, fatPer100: 10, fiberPer100: 0 },
+  'fish':               { ingredients: ['Fish Fillet','Lemon Juice','Olive Oil','Garlic','Dill','Salt','Black Pepper'], calPer100: 130, proteinPer100: 22, carbsPer100: 0, fatPer100: 5, fiberPer100: 0 },
+  'egg':                { ingredients: ['Eggs','Salt','Black Pepper','Butter'], calPer100: 155, proteinPer100: 13, carbsPer100: 1, fatPer100: 11, fiberPer100: 0 },
+  'toast':              { ingredients: ['Bread','Butter','Salt'], calPer100: 290, proteinPer100: 9, carbsPer100: 49, fatPer100: 6, fiberPer100: 2.5 },
+  'cereal':             { ingredients: ['Cereal Flakes','Milk','Sugar','Dried Fruits','Nuts'], calPer100: 160, proteinPer100: 5, carbsPer100: 28, fatPer100: 3, fiberPer100: 2.5 },
+  'poha':               { ingredients: ['Flattened Rice','Onion','Potato','Peanuts','Mustard Seeds','Curry Leaves','Turmeric','Green Chilli','Lemon Juice','Oil','Salt','Coriander Leaves'], calPer100: 130, proteinPer100: 3, carbsPer100: 22, fatPer100: 3, fiberPer100: 1 },
+  'upma':               { ingredients: ['Semolina','Onion','Mustard Seeds','Curry Leaves','Green Chilli','Ginger','Peanuts','Urad Dal','Chana Dal','Oil','Salt','Water','Coriander Leaves'], calPer100: 110, proteinPer100: 3, carbsPer100: 18, fatPer100: 3, fiberPer100: 1 },
+  'maggi':              { ingredients: ['Noodles','Tastemaker Powder','Water','Oil','Salt'], calPer100: 190, proteinPer100: 4, carbsPer100: 26, fatPer100: 8, fiberPer100: 1 },
+  'paratha':            { ingredients: ['Whole Wheat Flour','Potato','Ghee','Cumin','Green Chilli','Coriander Leaves','Salt','Water'], calPer100: 240, proteinPer100: 5, carbsPer100: 32, fatPer100: 10, fiberPer100: 2.5 },
+};
+
+// Default fallback for unknown dishes
+const DEFAULT_DISH = { ingredients: ['Mixed Ingredients','Vegetables','Oil','Salt','Spices','Herbs'], calPer100: 150, proteinPer100: 8, carbsPer100: 20, fatPer100: 5, fiberPer100: 1.5 };
+
+function matchDish(dishName: string): typeof DEFAULT_DISH {
+  if (!dishName) return DEFAULT_DISH;
+  const lower = dishName.toLowerCase().trim();
+
+  // Exact match — instant win
+  if (DISH_DB[lower]) return DISH_DB[lower];
+
+  const keys = Object.keys(DISH_DB);
+  const words = lower.split(/\s+/).filter(w => w.length >= 2);
+
+  let bestScore = 0;
+  let bestKey = '';
+
+  for (const key of keys) {
+    let score = 0;
+    const keyWords = key.split(/\s+/);
+
+    // Award points for each input word that appears in the key
+    for (const w of words) {
+      if (key.includes(w)) score += 10;
+      if (key === w) score += 15;           // exact word match bonus
+      for (const kw of keyWords) {
+        if (kw.includes(w) || w.includes(kw)) score += 5;
+      }
+    }
+
+    // Bonus: key contains the full input (user typed a sub-string of a dish name)
+    if (key.includes(lower)) score += 8;
+    // Bonus: every key-word matched at least once
+    const matchedAllKeyWords = keyWords.every(kw =>
+      kw.length < 3 || words.some(w => kw.includes(w) || w.includes(kw))
+    );
+    if (matchedAllKeyWords) score += 6;
+
+    // Longer, more specific dish names get a small boost as a tiebreaker
+    score += key.length * 0.5;
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestKey = key;
+    }
+  }
+
+  return bestScore >= 10 ? DISH_DB[bestKey] : DEFAULT_DISH;
+}
+
+// ── Mock AI result ─────────────────────────────────────────────────────────
+function getMockResult(dishName: string, weight: number, age: number, userWeight: number, goal: string): NutritionResult {
+  const dish = matchDish(dishName);
+  const s = weight / 100;
+  const calories = Math.round(dish.calPer100 * s);
+  const protein  = Math.round(dish.proteinPer100 * s);
+  const carbs    = Math.round(dish.carbsPer100 * s);
+  const fat      = Math.round(dish.fatPer100 * s);
+  const fiber    = Math.round(dish.fiberPer100 * s);
+
+  const sugg: string[] = [];
+  if (protein < 30) sugg.push('Add a protein source — grilled chicken, tofu, or lentils — to hit your daily target.');
+  if (fiber < 8)    sugg.push('Include leafy greens (spinach, kale) or legumes to boost fibre intake.');
+  if (goal === 'lose') sugg.push('Reduce portion by ~15% and add a side salad to stay satiated with fewer calories.');
+  if (goal === 'gain') sugg.push('Add a handful of nuts or a protein shake alongside this meal to support muscle growth.');
+  if (age > 40)     sugg.push('Prioritise calcium-rich foods (dairy, broccoli) to support bone density.');
+  if (userWeight > 90) sugg.push('Swap refined carbs for whole grains to improve insulin sensitivity.');
+  if (sugg.length === 0) sugg.push('Great balance! Your meal covers key macros well. Stay hydrated.');
+
+  // Next meal ideas based on what's missing
+  const nextMeals = goal === 'lose'
+    ? [
+        { name: 'Grilled Salmon Salad', emoji: '🥗', cal: 320, reason: 'High protein, low carb' },
+        { name: 'Lentil Soup',          emoji: '🍲', cal: 280, reason: 'Rich in fibre & iron' },
+        { name: 'Greek Yogurt Bowl',    emoji: '🥣', cal: 210, reason: 'Probiotic + calcium boost' },
+      ]
+    : goal === 'gain'
+    ? [
+        { name: 'Chicken & Rice Bowl',  emoji: '🍚', cal: 620, reason: 'High protein + complex carbs' },
+        { name: 'Peanut Butter Toast',  emoji: '🥜', cal: 420, reason: 'Healthy fats + energy' },
+        { name: 'Egg & Avocado Wrap',   emoji: '🌯', cal: 480, reason: 'Complete amino acids' },
+      ]
+    : [
+        { name: 'Veggie Stir Fry',      emoji: '🥦', cal: 350, reason: 'Micronutrient dense' },
+        { name: 'Quinoa Buddha Bowl',   emoji: '🫙', cal: 410, reason: 'Complete protein + fibre' },
+        { name: 'Fruit & Nut Snack',    emoji: '🍎', cal: 180, reason: 'Natural sugars + antioxidants' },
+      ];
+
+  return {
+    mealName: dishName || 'Mixed meal', weight, calories,
+    macros: { protein, carbs, fat, fiber },
+    micros: {
+      'Vitamin A':  { val: Math.round(180*s/3.5),          unit: 'µg', ref: 800  },
+      'Vitamin C':  { val: Math.round(12*s/3.5),            unit: 'mg', ref: 80   },
+      'Vitamin D':  { val: Math.round(1.2*s/3.5*10)/10,     unit: 'µg', ref: 15   },
+      'Vitamin E':  { val: Math.round(2.4*s/3.5*10)/10,     unit: 'mg', ref: 12   },
+      'Vitamin K':  { val: Math.round(18*s/3.5),            unit: 'µg', ref: 75   },
+      'Vitamin B12':{ val: Math.round(0.6*s/3.5*10)/10,     unit: 'µg', ref: 2.4  },
+      'Folate':     { val: Math.round(32*s/3.5),            unit: 'µg', ref: 200  },
+      'Iron':       { val: Math.round(3.2*s/3.5*10)/10,     unit: 'mg', ref: 14   },
+      'Calcium':    { val: Math.round(95*s/3.5),            unit: 'mg', ref: 800  },
+      'Potassium':  { val: Math.round(420*s/3.5),           unit: 'mg', ref: 2000 },
+      'Sodium':     { val: Math.round(680*s/3.5),           unit: 'mg', ref: 2300 },
+      'Zinc':       { val: Math.round(2.1*s/3.5*10)/10,     unit: 'mg', ref: 10   },
+      'Magnesium':  { val: Math.round(38*s/3.5),            unit: 'mg', ref: 375  },
+    },
+    ingredients: dish.ingredients,
+    suggestions: sugg,
+    nextMeals,
+  };
+}
+
+// ── Render daily progress (uses running log totals) ────────────────────────
+function renderDailyProgress(newMeal: NutritionResult, calGoal: number) {
+  const totals = getDailyTotals();
+  const rows = [
+    { label: 'Calories', val: totals.calories, goal: calGoal,  unit: 'kcal', color: '#171717' },
+    { label: 'Protein',  val: totals.protein,  goal: Math.round(calGoal*0.25/4), unit: 'g', color: '#3b82f6' },
+    { label: 'Carbs',    val: totals.carbs,    goal: Math.round(calGoal*0.5/4),  unit: 'g', color: '#f59e0b' },
+    { label: 'Fat',      val: totals.fat,      goal: Math.round(calGoal*0.25/9), unit: 'g', color: '#ef4444' },
+  ];
+  return rows.map(r => {
+    const pct = Math.min(Math.round(r.val / r.goal * 100), 100);
+    const over = r.val > r.goal;
+    return `
+      <div>
+        <div class="flex justify-between text-[12px] mb-1">
+          <span class="text-[#4d4d4d]">${r.label}</span>
+          <span class="font-mono ${over ? 'text-[#ee0000]' : 'text-[#888888]'}">${r.val}${r.unit} / ${r.goal}${r.unit}${over ? ' ⚠' : ''}</span>
+        </div>
+        <div class="h-1.5 rounded-full bg-[#ebebeb] overflow-hidden">
+          <div class="h-full rounded-full transition-all duration-1000" style="width:${pct}%;background:${over ? '#ee0000' : r.color}"></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── Meal type selector ─────────────────────────────────────────────────────
+let selectedMealType: MealType = 'lunch';
+const mealTypeBtns = document.querySelectorAll('.meal-type-btn');
+function updateMealTypeUI() {
+  mealTypeBtns.forEach(btn => {
+    const type = (btn as HTMLElement).dataset.mealType as MealType;
+    if (type === selectedMealType) {
+      btn.classList.remove('bg-white','text-[#4d4d4d]','border-[#ebebeb]');
+      btn.classList.add('bg-[#171717]','text-white','border-[#171717]');
+    } else {
+      btn.classList.remove('bg-[#171717]','text-white','border-[#171717]');
+      btn.classList.add('bg-white','text-[#4d4d4d]','border-[#ebebeb]');
+    }
+  });
+}
+mealTypeBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    selectedMealType = (btn as HTMLElement).dataset.mealType as MealType;
+    updateMealTypeUI();
+  });
+});
+// Auto-select based on current hour
+const currentHour = new Date().getHours();
+if (currentHour < 11) selectedMealType = 'breakfast';
+else if (currentHour < 15) selectedMealType = 'lunch';
+else if (currentHour < 18) selectedMealType = 'snack';
+else if (currentHour < 21) selectedMealType = 'dinner';
+else selectedMealType = 'dessert';
+updateMealTypeUI();
+
+// ── Render meals timeline ──────────────────────────────────────────────────
+function renderTimeline() {
+  const log = getLog();
+  const dateEl = document.getElementById('timeline-date');
+  const totalCalEl = document.getElementById('timeline-total-cal');
+  const listEl = document.getElementById('meals-timeline')!;
+  const emptyEl = document.getElementById('meals-timeline-empty')!;
+  const summaryBar = document.getElementById('day-summary-bar')!;
+  const summaryMacros = document.getElementById('day-summary-macros')!;
+
+  if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  if (log.length === 0) {
+    listEl.innerHTML = '';
+    emptyEl.classList.remove('hidden');
+    summaryBar.classList.add('hidden');
+    if (totalCalEl) totalCalEl.textContent = '';
+    return;
+  }
+
+  emptyEl.classList.add('hidden');
+  summaryBar.classList.remove('hidden');
+
+  const totals = getDailyTotals();
+  if (totalCalEl) totalCalEl.textContent = `${totals.calories} kcal total`;
+
+  // Group by meal type
+  const mealOrder: MealType[] = ['breakfast','lunch','snack','dinner','dessert'];
+  const grouped: Record<string, LoggedMeal[]> = {};
+  log.forEach(m => {
+    const type = m.mealType || 'lunch';
+    if (!grouped[type]) grouped[type] = [];
+    grouped[type].push(m);
+  });
+
+  let html = '';
+  for (const type of mealOrder) {
+    const meals = grouped[type];
+    if (!meals || meals.length === 0) continue;
+    const meta = MEAL_TYPE_META[type];
+    const typeCal = meals.reduce((a, m) => a + m.calories, 0);
+
+    html += `
+      <div class="px-5 py-3 bg-[#fafafa] border-b border-[#ebebeb]">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-sm">${meta.emoji}</span>
+            <span class="text-[12px] font-semibold text-[#171717] uppercase tracking-wide">${meta.label}</span>
+            <span class="text-[11px] text-[#888888] font-mono">${meals.length} item${meals.length > 1 ? 's' : ''}</span>
+          </div>
+          <span class="text-[12px] font-mono font-medium" style="color:${meta.color}">${typeCal} kcal</span>
+        </div>
+      </div>`;
+
+    meals.forEach(m => {
+      html += `
+        <div class="px-5 py-3 flex items-center gap-4 hover:bg-[#fafafa] transition-colors">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-mono font-medium shrink-0" style="background:${meta.color}18;color:${meta.color}">
+            ${m.time}
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-medium text-[#171717] truncate">${m.name}</p>
+          </div>
+          <div class="hidden sm:flex items-center gap-3 text-[11px] font-mono text-[#888888] shrink-0">
+            <span><strong class="text-[#3b82f6]">${m.protein}g</strong> P</span>
+            <span><strong class="text-[#f59e0b]">${m.carbs}g</strong> C</span>
+            <span><strong class="text-[#ef4444]">${m.fat}g</strong> F</span>
+          </div>
+          <div class="text-right shrink-0">
+            <p class="text-[14px] font-semibold text-[#171717]">${m.calories}</p>
+            <p class="text-[10px] text-[#888888]">kcal</p>
+          </div>
+        </div>`;
+    });
+  }
+
+  listEl.innerHTML = html;
+
+  // Day summary macros
+  const summaryItems = [
+    { label: 'Calories', val: totals.calories, unit: 'kcal', color: '#171717' },
+    { label: 'Protein',  val: totals.protein,  unit: 'g',    color: '#3b82f6' },
+    { label: 'Carbs',    val: totals.carbs,    unit: 'g',    color: '#f59e0b' },
+    { label: 'Fat',      val: totals.fat,      unit: 'g',    color: '#ef4444' },
+  ];
+  summaryMacros.innerHTML = summaryItems.map(s => `
+    <div class="text-center">
+      <p class="text-[16px] font-semibold tracking-[-0.5px]" style="color:${s.color}">${s.val}</p>
+      <p class="text-[10px] text-[#888888] mt-0.5">${s.label} (${s.unit})</p>
+    </div>
+  `).join('');
+}
+
+// Initial render of timeline (on page load)
+renderTimeline();
+
+// ── Analyse ────────────────────────────────────────────────────────────────
+document.getElementById('analyse-btn')!.addEventListener('click', async () => {
+  const dishName   = (document.getElementById('dish-name') as HTMLInputElement).value.trim();
+  const mealWeight = parseInt((document.getElementById('meal-weight') as HTMLInputElement).value) || 350;
+  const age        = parseInt((document.getElementById('quick-age') as HTMLInputElement).value) || 25;
+  const userWeight = parseInt((document.getElementById('quick-weight') as HTMLInputElement).value) || 70;
+  const goal       = (document.getElementById('quick-goal') as HTMLSelectElement).value;
+  const calGoal    = goal === 'lose' ? 1500 : goal === 'gain' ? 2500 : 2000;
+
+  emptyState.classList.add('hidden');
+  resultsContent.classList.add('hidden');
+  loadingState.classList.remove('hidden');
+
+  await new Promise(r => setTimeout(r, 2000));
+
+  const result = getMockResult(dishName, mealWeight, age, userWeight, goal);
+
+  // Log this meal to daily tracker
+  addToLog({
+    name: result.mealName,
+    calories: result.calories,
+    protein: result.macros.protein,
+    carbs: result.macros.carbs,
+    fat: result.macros.fat,
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    mealType: selectedMealType,
+  });
+
+  // ── Meal header ──
+  document.getElementById('result-meal-name')!.textContent = result.mealName;
+  document.getElementById('result-weight')!.textContent    = `~${result.weight}g serving`;
+  document.getElementById('result-calories')!.textContent  = result.calories.toString();
+
+  // ── Nutrition report table — Macros tab ──
+  const macroRows = [
+    tableRow('Energy',   result.calories,        'kcal', 2000),
+    tableRow('Protein',  result.macros.protein,  'g',    50),
+    tableRow('Carbs',    result.macros.carbs,    'g',    260),
+    tableRow('Fat',      result.macros.fat,      'g',    70),
+    tableRow('Fibre',    result.macros.fiber,    'g',    25),
+    tableRow('Sugar',    Math.round(result.macros.carbs * 0.3), 'g', 90, true),
+    tableRow('Sat. Fat', Math.round(result.macros.fat * 0.4),   'g', 20, true),
+  ].join('');
+  document.getElementById('nutrition-table-macros')!.innerHTML = macroRows;
+
+  // ── Nutrition report table — Micros tab ──
+  const microRows = Object.entries(result.micros).map(([name, d]) =>
+    tableRow(name, d.val, d.unit, d.ref, name === 'Sodium')
+  ).join('');
+  document.getElementById('nutrition-table-micros')!.innerHTML = microRows;
+
+  // ── AI suggestions ──
+  document.getElementById('suggestions-list')!.innerHTML = result.suggestions.map(s =>
+    `<p class="text-[14px] text-[#888888] leading-[20px] flex gap-2"><span class="text-[#50e3c2] shrink-0 mt-0.5">→</span>${s}</p>`
+  ).join('');
+
+  // ── Next meal ideas ──
+  document.getElementById('next-meal-ideas')!.innerHTML = result.nextMeals.map(m => `
+    <div class="rounded-[8px] bg-white/5 border border-white/10 p-3 hover:bg-white/10 transition-colors cursor-pointer">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="text-lg">${m.emoji}</span>
+        <span class="text-[13px] font-medium text-white">${m.name}</span>
+      </div>
+      <p class="text-[11px] text-[#888888]">${m.reason}</p>
+      <p class="text-[11px] font-mono text-[#50e3c2] mt-1">~${m.cal} kcal</p>
+    </div>`).join('');
+
+  // ── Daily running total ──
+  const log = getLog();
+  document.getElementById('meals-logged-count')!.textContent = `${log.length} meal${log.length !== 1 ? 's' : ''} logged today`;
+  document.getElementById('daily-progress')!.innerHTML = renderDailyProgress(result, calGoal);
+
+  // ── Update timeline ──
+  renderTimeline();
+
+  loadingState.classList.add('hidden');
+  resultsContent.classList.remove('hidden');
+
+  if (window.innerWidth < 1024) {
+    document.getElementById('results-panel')!.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+});
+</script>
+

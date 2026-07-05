@@ -1,0 +1,345 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+---
+
+<Layout title="Profile — Micro & Calorie Tracker">
+  <Navbar currentPage="/profile" />
+
+  <main class="max-w-[800px] mx-auto px-6 py-10">
+
+    <div class="mb-8">
+      <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide mb-1">Settings</p>
+      <h1 class="text-[32px] font-semibold tracking-[-1.28px] text-[#171717]">Your profile.</h1>
+      <p class="text-[15px] text-[#4d4d4d] mt-1">We use this to personalise your nutrition targets and meal suggestions.</p>
+    </div>
+
+    <!-- Profile form -->
+    <form id="profile-form" class="space-y-5">
+
+      <!-- Personal info -->
+      <div class="rounded-[12px] bg-white border border-[#ebebeb] p-6 shadow-card">
+        <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide mb-5">Personal information</p>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[13px] font-medium text-[#171717] mb-1.5">Name</label>
+            <input type="text" id="p-name" placeholder="Your name"
+              class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] placeholder:text-[#888888] focus:outline-none focus:border-[#a1a1a1] transition-colors" />
+          </div>
+          <div>
+            <label class="block text-[13px] font-medium text-[#171717] mb-1.5">Age</label>
+            <input type="number" id="p-age" placeholder="25" min="10" max="100"
+              class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] placeholder:text-[#888888] focus:outline-none focus:border-[#a1a1a1] transition-colors" />
+          </div>
+          <div>
+            <label class="block text-[13px] font-medium text-[#171717] mb-1.5">Biological sex</label>
+            <select id="p-sex"
+              class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] focus:outline-none focus:border-[#a1a1a1] transition-colors">
+              <option value="">Select</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Prefer not to say</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[13px] font-medium text-[#171717] mb-1.5">Height (cm)</label>
+            <input type="number" id="p-height" placeholder="170" min="100" max="250"
+              class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] placeholder:text-[#888888] focus:outline-none focus:border-[#a1a1a1] transition-colors" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Body metrics -->
+      <div class="rounded-[12px] bg-white border border-[#ebebeb] p-6 shadow-card">
+        <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide mb-5">Body metrics</p>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[13px] font-medium text-[#171717] mb-1.5">Current weight (kg)</label>
+            <input type="number" id="p-weight" placeholder="70" min="20" max="300" step="0.1"
+              class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] placeholder:text-[#888888] focus:outline-none focus:border-[#a1a1a1] transition-colors" />
+          </div>
+          <div>
+            <label class="block text-[13px] font-medium text-[#171717] mb-1.5">
+              Goal weight (kg)
+              <span class="ml-1 px-1.5 py-0.5 rounded-full bg-[#d3e5ff] text-[#0070f3] text-[10px] font-mono">New</span>
+            </label>
+            <div class="flex gap-2">
+              <input type="number" id="p-target-weight" placeholder="65" min="20" max="300" step="0.1"
+                class="flex-1 h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] placeholder:text-[#888888] focus:outline-none focus:border-[#a1a1a1] transition-colors" />
+              <button type="button" id="set-goal-btn"
+                class="px-3 h-10 rounded-[6px] bg-[#171717] text-white text-[13px] font-medium hover:bg-[#333] transition-colors whitespace-nowrap">
+                Set goal
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Goal weight progress (shown after set) -->
+        <div id="goal-progress-preview" class="hidden mt-4 p-4 rounded-[8px] bg-[#fafafa] border border-[#ebebeb]">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-[12px] font-mono text-[#888888]">Goal weight progress</p>
+            <span id="gp-pct-label" class="text-[12px] font-mono text-[#0070f3]">0%</span>
+          </div>
+          <div class="h-2 rounded-full bg-[#ebebeb] overflow-hidden mb-2">
+            <div id="gp-bar" class="h-full rounded-full bg-[#0070f3] transition-all duration-700" style="width:0%"></div>
+          </div>
+          <div class="flex justify-between text-[12px] text-[#888888]">
+            <span id="gp-start">Start: — kg</span>
+            <span id="gp-remaining">— kg remaining</span>
+            <span id="gp-target-label">Goal: — kg</span>
+          </div>
+          <p id="gp-eta" class="text-[11px] font-mono text-[#888888] mt-2"></p>
+        </div>
+
+        <!-- BMI display -->
+        <div id="bmi-display" class="hidden mt-4 p-4 rounded-[8px] bg-[#fafafa] border border-[#ebebeb]">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-[12px] font-mono text-[#888888]">BMI</p>
+              <p id="bmi-value" class="text-[24px] font-semibold tracking-[-0.96px] text-[#171717]">—</p>
+            </div>
+            <div id="bmi-category" class="px-3 py-1 rounded-full text-[12px] font-medium"></div>
+          </div>
+          <div class="mt-3 h-2 rounded-full bg-[#ebebeb] overflow-hidden relative">
+            <div class="absolute inset-y-0 left-0 rounded-full" style="background: linear-gradient(to right, #007cf0, #50e3c2, #f5a623, #ee0000); width: 100%; opacity: 0.3"></div>
+            <div id="bmi-marker" class="absolute top-0 w-3 h-3 rounded-full bg-[#171717] border-2 border-white shadow-card -translate-y-0.5 -translate-x-1.5 transition-all duration-500" style="left: 40%"></div>
+          </div>
+          <div class="flex justify-between text-[10px] font-mono text-[#888888] mt-1">
+            <span>Underweight</span><span>Normal</span><span>Overweight</span><span>Obese</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Goals & activity -->
+      <div class="rounded-[12px] bg-white border border-[#ebebeb] p-6 shadow-card">
+        <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide mb-5">Goals & activity</p>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[13px] font-medium text-[#171717] mb-1.5">Primary goal</label>
+            <select id="p-goal"
+              class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] focus:outline-none focus:border-[#a1a1a1] transition-colors">
+              <option value="maintain">Maintain weight</option>
+              <option value="lose">Lose weight</option>
+              <option value="gain">Gain muscle</option>
+              <option value="health">Improve overall health</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[13px] font-medium text-[#171717] mb-1.5">Activity level</label>
+            <select id="p-activity"
+              class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] focus:outline-none focus:border-[#a1a1a1] transition-colors">
+              <option value="sedentary">Sedentary (desk job)</option>
+              <option value="light">Lightly active (1–3 days/week)</option>
+              <option value="moderate">Moderately active (3–5 days/week)</option>
+              <option value="active">Very active (6–7 days/week)</option>
+              <option value="athlete">Athlete (2× per day)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[13px] font-medium text-[#171717] mb-1.5">Dietary preference</label>
+            <select id="p-diet"
+              class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] focus:outline-none focus:border-[#a1a1a1] transition-colors">
+              <option value="none">No preference</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="vegan">Vegan</option>
+              <option value="keto">Keto</option>
+              <option value="paleo">Paleo</option>
+              <option value="gluten-free">Gluten-free</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[13px] font-medium text-[#171717] mb-1.5">Allergies / intolerances</label>
+            <input type="text" id="p-allergies" placeholder="e.g. nuts, dairy, gluten"
+              class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] placeholder:text-[#888888] focus:outline-none focus:border-[#a1a1a1] transition-colors" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Calculated targets -->
+      <div id="targets-card" class="rounded-[12px] bg-[#171717] p-6 shadow-card-lg hidden">
+        <div class="flex items-center gap-2 mb-5">
+          <div class="w-5 h-5 rounded-full bg-[#50e3c2] flex items-center justify-center">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M2 5l2 2 4-4" stroke="#171717" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <p class="text-[12px] font-mono text-[#50e3c2] uppercase tracking-wide">Your daily targets</p>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="targets-grid">
+          <!-- Rendered by JS -->
+        </div>
+        <p class="text-[12px] text-[#888888] mt-4">Calculated using Mifflin-St Jeor equation. Update your profile to recalculate.</p>
+      </div>
+
+      <!-- Save button -->
+      <div class="flex items-center gap-3">
+        <button type="submit"
+          class="px-6 h-11 rounded-full bg-[#171717] text-white text-[15px] font-medium hover:bg-[#333] transition-colors">
+          Save profile
+        </button>
+        <span id="save-msg" class="hidden text-[13px] text-[#0070f3] font-mono">✓ Saved successfully</span>
+      </div>
+    </form>
+  </main>
+</Layout>
+
+<script>
+// ── Persist helpers ────────────────────────────────────────────────────────
+function loadProfile() {
+  try { return JSON.parse(localStorage.getItem('mct_profile') || '{}'); } catch { return {}; }
+}
+function saveProfile(data: Record<string, string>) {
+  localStorage.setItem('mct_profile', JSON.stringify(data));
+}
+
+// ── Calculators ────────────────────────────────────────────────────────────
+function calcBMI(w: number, h: number) { return w / ((h / 100) ** 2); }
+function getBMICat(bmi: number) {
+  if (bmi < 18.5) return { label: 'Underweight', color: '#007cf0', pct: 10 };
+  if (bmi < 25)   return { label: 'Normal',      color: '#10b981', pct: 35 };
+  if (bmi < 30)   return { label: 'Overweight',  color: '#f5a623', pct: 65 };
+  return              { label: 'Obese',       color: '#ee0000', pct: 88 };
+}
+function calcTDEE(w: number, h: number, age: number, sex: string, activity: string) {
+  const bmr = sex === 'female'
+    ? 10*w + 6.25*h - 5*age - 161
+    : 10*w + 6.25*h - 5*age + 5;
+  const m: Record<string,number> = { sedentary:1.2, light:1.375, moderate:1.55, active:1.725, athlete:1.9 };
+  return Math.round(bmr * (m[activity] || 1.55));
+}
+
+// ── DOM refs ───────────────────────────────────────────────────────────────
+const weightInput = document.getElementById('p-weight') as HTMLInputElement;
+const heightInput = document.getElementById('p-height') as HTMLInputElement;
+const ageInput    = document.getElementById('p-age') as HTMLInputElement;
+const sexSelect   = document.getElementById('p-sex') as HTMLSelectElement;
+const activitySel = document.getElementById('p-activity') as HTMLSelectElement;
+const goalSel     = document.getElementById('p-goal') as HTMLSelectElement;
+const targetWtIn  = document.getElementById('p-target-weight') as HTMLInputElement;
+
+// ── Load saved profile ─────────────────────────────────────────────────────
+const saved = loadProfile();
+if (saved.name)         (document.getElementById('p-name') as HTMLInputElement).value = saved.name;
+if (saved.age)          ageInput.value = saved.age;
+if (saved.sex)          sexSelect.value = saved.sex;
+if (saved.height)       heightInput.value = saved.height;
+if (saved.weight)       weightInput.value = saved.weight;
+if (saved.targetWeight) targetWtIn.value = saved.targetWeight;
+if (saved.goal)         goalSel.value = saved.goal;
+if (saved.activity)     activitySel.value = saved.activity;
+if (saved.diet)         (document.getElementById('p-diet') as HTMLSelectElement).value = saved.diet;
+if (saved.allergies)    (document.getElementById('p-allergies') as HTMLInputElement).value = saved.allergies;
+
+// ── Goal weight progress preview ───────────────────────────────────────────
+function updateGoalProgress() {
+  const w = parseFloat(weightInput.value);
+  const t = parseFloat(targetWtIn.value);
+  if (!w || !t) return;
+  const preview = document.getElementById('goal-progress-preview')!;
+  preview.classList.remove('hidden');
+  const start = parseFloat(saved.startWeight || w.toString());
+  const totalDiff = Math.abs(start - t);
+  const done = Math.abs(start - w);
+  const pct = totalDiff > 0 ? Math.min(Math.round(done / totalDiff * 100), 100) : 0;
+  const remaining = Math.abs(w - t).toFixed(1);
+  const weeks = Math.ceil(parseFloat(remaining) / 0.5);
+  (document.getElementById('gp-bar') as HTMLElement).style.width = pct + '%';
+  document.getElementById('gp-pct-label')!.textContent = pct + '%';
+  document.getElementById('gp-start')!.textContent = `Start: ${start} kg`;
+  document.getElementById('gp-remaining')!.textContent = `${remaining} kg remaining`;
+  document.getElementById('gp-target-label')!.textContent = `Goal: ${t} kg`;
+  document.getElementById('gp-eta')!.textContent = `Est. ${weeks} week${weeks !== 1 ? 's' : ''} at 0.5 kg/week`;
+}
+
+document.getElementById('set-goal-btn')!.addEventListener('click', () => {
+  updateGoalProgress();
+  const w = parseFloat(weightInput.value);
+  const t = parseFloat(targetWtIn.value);
+  if (w && t) {
+    const p = loadProfile();
+    if (!p.startWeight) p.startWeight = w.toString();
+    p.targetWeight = t.toString();
+    p.weight = w.toString();
+    saveProfile(p);
+    const btn = document.getElementById('set-goal-btn')!;
+    btn.textContent = '✓ Saved';
+    setTimeout(() => { btn.textContent = 'Set goal'; }, 2000);
+  }
+});
+
+// ── Live calculations ──────────────────────────────────────────────────────
+function updateCalcs() {
+  const w = parseFloat(weightInput.value);
+  const h = parseFloat(heightInput.value);
+  const a = parseInt(ageInput.value);
+  const sex = sexSelect.value;
+  const activity = activitySel.value;
+  const goal = goalSel.value;
+
+  if (w && h) {
+    const bmi = calcBMI(w, h);
+    const cat = getBMICat(bmi);
+    document.getElementById('bmi-display')!.classList.remove('hidden');
+    document.getElementById('bmi-value')!.textContent = bmi.toFixed(1);
+    const catEl = document.getElementById('bmi-category')!;
+    catEl.textContent = cat.label;
+    catEl.style.background = cat.color + '20';
+    catEl.style.color = cat.color;
+    (document.getElementById('bmi-marker') as HTMLElement).style.left = cat.pct + '%';
+  }
+
+  if (w && h && a && sex) {
+    let tdee = calcTDEE(w, h, a, sex, activity);
+    let cal = goal === 'lose' ? tdee - 500 : goal === 'gain' ? tdee + 300 : tdee;
+    const protein = Math.round(w * 1.8);
+    const fat     = Math.round(cal * 0.25 / 9);
+    const carbs   = Math.round((cal - protein*4 - fat*9) / 4);
+    document.getElementById('targets-card')!.classList.remove('hidden');
+    document.getElementById('targets-grid')!.innerHTML = [
+      { label: 'Calories', val: cal + ' kcal', color: '#171717' },
+      { label: 'Protein',  val: protein + 'g', color: '#3b82f6' },
+      { label: 'Carbs',    val: carbs + 'g',   color: '#f59e0b' },
+      { label: 'Fat',      val: fat + 'g',      color: '#ef4444' },
+    ].map(t => `
+      <div class="rounded-[8px] bg-white/5 border border-white/10 p-4 text-center">
+        <p class="text-[11px] font-mono text-[#888888] uppercase tracking-wide mb-1">${t.label}</p>
+        <p class="text-[20px] font-semibold tracking-[-0.6px]" style="color:${t.color}">${t.val}</p>
+      </div>`).join('');
+  }
+
+  updateGoalProgress();
+}
+
+[weightInput, heightInput, ageInput, sexSelect, activitySel, goalSel, targetWtIn].forEach(el => {
+  el?.addEventListener('input', updateCalcs);
+  el?.addEventListener('change', updateCalcs);
+});
+
+// Run on load if data exists
+if (saved.weight || saved.height) updateCalcs();
+
+// ── Save form ──────────────────────────────────────────────────────────────
+document.getElementById('profile-form')!.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const data: Record<string, string> = {
+    name:         (document.getElementById('p-name') as HTMLInputElement).value,
+    age:          ageInput.value,
+    sex:          sexSelect.value,
+    height:       heightInput.value,
+    weight:       weightInput.value,
+    targetWeight: targetWtIn.value,
+    goal:         goalSel.value,
+    activity:     activitySel.value,
+    diet:         (document.getElementById('p-diet') as HTMLSelectElement).value,
+    allergies:    (document.getElementById('p-allergies') as HTMLInputElement).value,
+  };
+  // Preserve startWeight
+  const existing = loadProfile();
+  if (existing.startWeight) data.startWeight = existing.startWeight;
+  else if (data.weight) data.startWeight = data.weight;
+  saveProfile(data);
+  const msg = document.getElementById('save-msg')!;
+  msg.classList.remove('hidden');
+  setTimeout(() => msg.classList.add('hidden'), 3000);
+});
+</script>

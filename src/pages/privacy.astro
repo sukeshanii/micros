@@ -1,0 +1,37 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+---
+
+<Layout title="Privacy Policy — Micro & Calorie Tracker">
+  <Navbar />
+
+  <main class="max-w-[800px] mx-auto px-6 py-10">
+    <div class="mb-8">
+      <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide mb-1">Legal</p>
+      <h1 class="text-[32px] font-semibold tracking-[-1.28px] text-[#171717]">Privacy Policy.</h1>
+      <p class="text-[15px] text-[#4d4d4d] mt-1">Last updated: 2025</p>
+    </div>
+
+    <div class="text-[15px] text-[#4d4d4d] leading-[26px] space-y-5">
+      <h2 class="text-[20px] font-semibold text-[#171717] tracking-[-0.6px]">Information We Collect</h2>
+      <p>We collect minimal information to provide our nutrition tracking service. When you use the micro&calorie tracker, meal photos you upload are processed locally in your browser. We do not store or transmit your meal images to any server. Nutritional data from your scans is saved locally on your device using browser localStorage and is never sent to our servers.</p>
+      <p>We do not require an account, email address, or any personal information to use the service. Any profile information you enter (age, weight, fitness goal) is stored locally on your device and used solely to personalise your nutrition recommendations.</p>
+
+      <h2 class="text-[20px] font-semibold text-[#171717] tracking-[-0.6px]">How We Use Your Information</h2>
+      <p>All data processing happens client-side in your browser. Meal photos are never uploaded to any server — they are used exclusively to display a preview and are discarded when you close or refresh the page. Nutrition calculations are performed locally using our built-in database. Your meal history and profile settings persist in your browser's local storage so you can return to your dashboard later.</p>
+
+      <h2 class="text-[20px] font-semibold text-[#171717] tracking-[-0.6px]">Data Sharing</h2>
+      <p>We do not sell, trade, or share your personal information with third parties. Since all data remains on your device, we have no access to your meal history, photos, or profile information. We do not use tracking cookies, analytics scripts, or advertising networks that collect personal data.</p>
+
+      <h2 class="text-[20px] font-semibold text-[#171717] tracking-[-0.6px]">Data Security</h2>
+      <p>Because your data never leaves your browser, there is no risk of server-side data breaches. Your meal history is stored in your browser's localStorage, which is sandboxed and inaccessible to other websites. We recommend clearing your browser data regularly if you use shared or public devices.</p>
+
+      <h2 class="text-[20px] font-semibold text-[#171717] tracking-[-0.6px]">Changes to This Policy</h2>
+      <p>We may update this privacy policy from time to time. Any changes will be posted on this page with an updated revision date. Continued use of the service after changes constitutes acceptance of the updated policy.</p>
+
+      <h2 class="text-[20px] font-semibold text-[#171717] tracking-[-0.6px]">Contact</h2>
+      <p>If you have questions about this privacy policy, please contact us through our <a href="/contact" class="text-[#0070f3] hover:underline">contact page</a>.</p>
+    </div>
+  </main>
+</Layout>

@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+---
+
+<Layout title="About Us — Micro & Calorie Tracker">
+  <Navbar />
+
+  <main class="max-w-[800px] mx-auto px-6 py-10">
+    <div class="mb-8">
+      <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide mb-1">About</p>
+      <h1 class="text-[32px] font-semibold tracking-[-1.28px] text-[#171717]">About Us.</h1>
+      <p class="text-[15px] text-[#4d4d4d] mt-1">Making nutrition tracking simple, private, and accessible for everyone.</p>
+    </div>
+
+    <div class="text-[15px] text-[#4d4d4d] leading-[26px] space-y-5">
+      <h2 class="text-[20px] font-semibold text-[#171717] tracking-[-0.6px]">Our Mission</h2>
+      <p>We built the micro&calorie tracker to solve a simple problem: understanding what is in your food should not require a nutrition degree or a paid subscription. Our mission is to make accurate, comprehensive nutrition tracking available to everyone — free, private, and instantly accessible from any browser.</p>
+      <p>Unlike traditional calorie counters that rely on tedious manual entry or expensive subscriptions, our AI-powered platform lets you scan a meal photo and receive a complete breakdown of calories, protein, carbs, fats, fibre, and over 30 micronutrients in seconds. No app download, no account, no cost.</p>
+
+      <h2 class="text-[20px] font-semibold text-[#171717] tracking-[-0.6px]">Why We Built This</h2>
+      <p>Most calorie tracking apps fall into two categories: overly simplistic counters that only show calories, or overly complex platforms that require significant time investment. We wanted to create something different — a tool that gives you professional-grade nutritional insights without the friction. By processing everything directly in your browser, we also solved the privacy problem: your meal photos and data never leave your device.</p>
+      <p>We believe that understanding your nutrition is a fundamental part of living a healthier life, and that this knowledge should be freely available to everyone regardless of budget or technical skill.</p>
+
+      <h2 class="text-[20px] font-semibold text-[#171717] tracking-[-0.6px]">What Makes Us Different</h2>
+      <p><strong>Privacy-first:</strong> Every scan stays on your device. No accounts, no servers, no data collection.</p>
+      <p><strong>Comprehensive:</strong> We track over 30 nutrients including vitamins, minerals, and all major macros — not just calories.</p>
+      <p><strong>AI-powered:</strong> Our computer vision model identifies meals from photos and delivers instant nutrition breakdowns.</p>
+      <p><strong>Free forever:</strong> No subscriptions, no trials, no credit card. Full nutrition tracking at no cost.</p>
+
+      <h2 class="text-[20px] font-semibold text-[#171717] tracking-[-0.6px]">Our Values</h2>
+      <p>We prioritise user privacy above all else. We believe nutrition tracking should be educational and empowering, not anxiety-inducing. We are committed to keeping our platform free and accessible, and we will never sell user data or introduce paywalls that limit access to nutritional information.</p>
+    </div>
+  </main>
+</Layout>
