@@ -243,7 +243,7 @@ import Navbar from '../components/Navbar.astro';
           <!-- Meal Analysis: Estimated / Target / Difference -->
           <div id="per-meal-comparison" class="hidden rounded-[12px] bg-white border border-[#ebebeb] p-5 shadow-card">
             <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide mb-3">Meal Analysis</p>
-            <div id="comparison-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-3"><!-- JS --></div>
+            <div id="comparison-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"><!-- JS --></div>
           </div>
 
           <!-- Full Nutrition Report Table (blood-report style) -->
@@ -769,7 +769,7 @@ function clearPreview() {
 }
 
 cameraBtn.addEventListener('click', () => {
-  if ('camera' in document.createElement('input')) {
+  if ('capture' in document.createElement('input')) {
     cameraInput.click();
   } else {
     galleryInput.click();
@@ -1188,9 +1188,10 @@ function renderTimeline() {
 renderTimeline();
 renderDailyProgress();
 
-// ── Meal Analysis: Estimated / Target / Difference ─────────────────────────
+// ── Meal Analysis: Estimated / Per-Meal Target / % of Daily / Diff ─────────
 function renderMealAnalysis(result: NutritionResult) {
   const target = PER_MEAL_TARGETS;
+  const daily = DAILY_TARGETS;
   const compEl = document.getElementById('per-meal-comparison')!;
   compEl.classList.remove('hidden');
 
@@ -1201,9 +1202,12 @@ function renderMealAnalysis(result: NutritionResult) {
   const calColor = calDiff > 10 ? '#ee0000' : calDiff < -10 ? '#f5a623' : '#10b981';
   const proColor = proDiff < -5 ? '#f5a623' : proDiff > 10 ? '#10b981' : '#10b981';
 
+  const calDailyPct = Math.round((result.calories / (daily.calories || 2000)) * 100);
+  const proDailyPct = Math.round((result.macros.protein / (daily.protein || 100)) * 100);
+
   document.getElementById('comparison-grid')!.innerHTML = `
     <div class="rounded-[8px] bg-[#fafafa] border border-[#ebebeb] p-4">
-      <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-2">Estimated</p>
+      <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-2">This meal</p>
       <div class="space-y-1.5">
         <div class="flex justify-between text-[13px]"><span class="text-[#4d4d4d]">Calories</span><span class="font-semibold text-[#171717]">${result.calories} kcal</span></div>
         <div class="flex justify-between text-[13px]"><span class="text-[#4d4d4d]">Protein</span><span class="font-semibold text-[#3b82f6]">${result.macros.protein}g</span></div>
@@ -1212,14 +1216,33 @@ function renderMealAnalysis(result: NutritionResult) {
       </div>
     </div>
     <div class="rounded-[8px] bg-[#fafafa] border border-[#ebebeb] p-4">
-      <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-2">Personal Target</p>
+      <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-2">Per Meal Target</p>
       <div class="space-y-1.5">
         <div class="flex justify-between text-[13px]"><span class="text-[#4d4d4d]">Calories / meal</span><span class="font-semibold text-[#171717]">${target.calories} kcal</span></div>
         <div class="flex justify-between text-[13px]"><span class="text-[#4d4d4d]">Protein / meal</span><span class="font-semibold text-[#3b82f6]">${target.protein}g</span></div>
       </div>
     </div>
     <div class="rounded-[8px] bg-[#fafafa] border border-[#ebebeb] p-4">
-      <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-2">Difference</p>
+      <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-2">% of Daily</p>
+      <div class="space-y-1.5">
+        <div class="flex justify-between text-[13px]">
+          <span class="text-[#4d4d4d]">Calories</span>
+          <span class="font-semibold text-[#171717]">${calDailyPct}% <span class="text-[11px] text-[#888888] font-normal">(of ${daily.calories})</span></span>
+        </div>
+        <div class="mt-1 h-1.5 w-full rounded-full bg-[#ebebeb] overflow-hidden">
+          <div class="h-full rounded-full transition-all duration-700" style="width:${Math.min(calDailyPct, 100)}%;background:${calDailyPct > 100 ? '#ee0000' : calDailyPct > 75 ? '#f5a623' : '#10b981'}"></div>
+        </div>
+        <div class="flex justify-between text-[13px]">
+          <span class="text-[#4d4d4d]">Protein</span>
+          <span class="font-semibold text-[#3b82f6]">${proDailyPct}% <span class="text-[11px] text-[#888888] font-normal">(of ${daily.protein}g)</span></span>
+        </div>
+        <div class="mt-1 h-1.5 w-full rounded-full bg-[#ebebeb] overflow-hidden">
+          <div class="h-full rounded-full transition-all duration-700" style="width:${Math.min(proDailyPct, 100)}%;background:${proDailyPct >= 80 ? '#10b981' : proDailyPct >= 40 ? '#f5a623' : '#ee0000'}"></div>
+        </div>
+      </div>
+    </div>
+    <div class="rounded-[8px] bg-[#fafafa] border border-[#ebebeb] p-4">
+      <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-2">vs Per Meal</p>
       <div class="space-y-1.5">
         <div class="flex justify-between text-[13px]">
           <span class="text-[#4d4d4d]">Calories</span>
@@ -1373,23 +1396,56 @@ analyseBtn.addEventListener('click', async () => {
   // ── Next meal ideas ──
   let nextMeals = result.nextMeals;
   if (!nextMeals || nextMeals.length === 0) {
-    const seed = result.mealName.split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0) + new Date().getDate();
-    const pool = goal === 'lose' ? [
-      { name: 'Grilled Salmon Salad', emoji: '🥗', cal: 320, reason: 'High protein, low carb' },
+    const diet = savedProfile.diet || 'none';
+    const isVeg = diet === 'vegetarian' || diet === 'vegan';
+    const mealCount = getLog().length;
+    const seed = result.mealName.split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0) + new Date().getDate() + mealCount;
+
+    const vegPool = [
       { name: 'Lentil Soup',          emoji: '🍲', cal: 280, reason: 'Rich in fibre & iron' },
       { name: 'Greek Yogurt Bowl',    emoji: '🥣', cal: 210, reason: 'Probiotic + calcium boost' },
       { name: 'Zucchini Noodles',     emoji: '🥬', cal: 180, reason: 'Low-calorie, nutrient dense' },
-    ] : goal === 'gain' ? [
-      { name: 'Chicken & Rice Bowl',  emoji: '🍚', cal: 620, reason: 'High protein + complex carbs' },
-      { name: 'Peanut Butter Toast',  emoji: '🥜', cal: 420, reason: 'Healthy fats + energy' },
-      { name: 'Steak & Sweet Potato', emoji: '🥩', cal: 650, reason: 'Iron-rich muscle builder' },
-      { name: 'Protein Oatmeal Bowl', emoji: '🥣', cal: 450, reason: 'Slow-release energy' },
-    ] : [
       { name: 'Veggie Stir Fry',      emoji: '🥦', cal: 350, reason: 'Micronutrient dense' },
       { name: 'Quinoa Buddha Bowl',   emoji: '🫙', cal: 410, reason: 'Complete protein + fibre' },
-      { name: 'Grilled Chicken Wrap', emoji: '🌯', cal: 380, reason: 'Balanced macros' },
+      { name: 'Protein Oatmeal Bowl', emoji: '🥣', cal: 450, reason: 'Slow-release energy' },
       { name: 'Berry Smoothie Bowl',  emoji: '🥤', cal: 290, reason: 'Antioxidants + fibre' },
+      { name: 'Peanut Butter Toast',  emoji: '🥜', cal: 420, reason: 'Healthy fats + energy' },
+      { name: 'Chickpea Salad Wrap',  emoji: '🌯', cal: 340, reason: 'Plant protein + fibre' },
+      { name: 'Mushroom Omelette',    emoji: '🍳', cal: 280, reason: 'High protein, low carb' },
+      { name: 'Dal & Rice Bowl',      emoji: '🍛', cal: 380, reason: 'Complete plant protein' },
+      { name: 'Sweet Potato Curry',   emoji: '🍠', cal: 330, reason: 'Vitamin A + complex carbs' },
     ];
+
+    if (isVeg) {
+      var pool = vegPool;
+    } else if (goal === 'lose') {
+      var pool = [
+        { name: 'Grilled Salmon Salad', emoji: '🥗', cal: 320, reason: 'High protein, low carb' },
+        { name: 'Lentil Soup',          emoji: '🍲', cal: 280, reason: 'Rich in fibre & iron' },
+        { name: 'Greek Yogurt Bowl',    emoji: '🥣', cal: 210, reason: 'Probiotic + calcium boost' },
+        { name: 'Zucchini Noodles',     emoji: '🥬', cal: 180, reason: 'Low-calorie, nutrient dense' },
+        { name: 'Tofu Stir Fry',        emoji: '🥬', cal: 260, reason: 'Plant protein, low fat' },
+        { name: 'Egg White Omelette',   emoji: '🍳', cal: 200, reason: 'Pure protein, minimal fat' },
+      ];
+    } else if (goal === 'gain') {
+      var pool = [
+        { name: 'Chicken & Rice Bowl',  emoji: '🍚', cal: 620, reason: 'High protein + complex carbs' },
+        { name: 'Peanut Butter Toast',  emoji: '🥜', cal: 420, reason: 'Healthy fats + energy' },
+        { name: 'Steak & Sweet Potato', emoji: '🥩', cal: 650, reason: 'Iron-rich muscle builder' },
+        { name: 'Protein Oatmeal Bowl', emoji: '🥣', cal: 450, reason: 'Slow-release energy' },
+        { name: 'Tuna Pasta Bake',      emoji: '🍝', cal: 580, reason: 'Carbs + lean protein' },
+        { name: 'Whole Milk Smoothie',  emoji: '🥤', cal: 500, reason: 'Calorie-dense, easy digest' },
+      ];
+    } else {
+      var pool = [
+        { name: 'Veggie Stir Fry',      emoji: '🥦', cal: 350, reason: 'Micronutrient dense' },
+        { name: 'Quinoa Buddha Bowl',   emoji: '🫙', cal: 410, reason: 'Complete protein + fibre' },
+        { name: 'Grilled Chicken Wrap', emoji: '🌯', cal: 380, reason: 'Balanced macros' },
+        { name: 'Berry Smoothie Bowl',  emoji: '🥤', cal: 290, reason: 'Antioxidants + fibre' },
+        { name: 'Turkey Sandwich',      emoji: '🥪', cal: 400, reason: 'Lean protein + grains' },
+        { name: 'Mixed Grain Salad',    emoji: '🥗', cal: 330, reason: 'Diverse nutrients' },
+      ];
+    }
     const start = seed % pool.length;
     nextMeals = [...pool.slice(start), ...pool.slice(0, start)].slice(0, 3);
   }
