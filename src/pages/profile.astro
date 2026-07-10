@@ -14,13 +14,18 @@ import Navbar from '../components/Navbar.astro';
       <p class="text-[15px] text-[#4d4d4d] mt-1">We use this to personalise your nutrition targets and meal suggestions.</p>
     </div>
 
-    <!-- Profile form -->
     <form id="profile-form" class="space-y-5">
 
       <!-- Personal info -->
       <div class="rounded-[12px] bg-white border border-[#ebebeb] p-6 shadow-card">
         <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide mb-5">Personal information</p>
         <div class="grid sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="block text-[13px] font-medium text-[#171717] mb-1.5">Email address</label>
+            <input type="email" id="p-email" placeholder="you@example.com"
+              class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] placeholder:text-[#888888] focus:outline-none focus:border-[#a1a1a1] transition-colors" />
+            <p id="email-status" class="text-[12px] font-mono text-[#888888] mt-1 hidden"></p>
+          </div>
           <div>
             <label class="block text-[13px] font-medium text-[#171717] mb-1.5">Name</label>
             <input type="text" id="p-name" placeholder="Your name"
@@ -74,7 +79,6 @@ import Navbar from '../components/Navbar.astro';
           </div>
         </div>
 
-        <!-- Goal weight progress (shown after set) -->
         <div id="goal-progress-preview" class="hidden mt-4 p-4 rounded-[8px] bg-[#fafafa] border border-[#ebebeb]">
           <div class="flex items-center justify-between mb-2">
             <p class="text-[12px] font-mono text-[#888888]">Goal weight progress</p>
@@ -91,7 +95,6 @@ import Navbar from '../components/Navbar.astro';
           <p id="gp-eta" class="text-[11px] font-mono text-[#888888] mt-2"></p>
         </div>
 
-        <!-- BMI display -->
         <div id="bmi-display" class="hidden mt-4 p-4 rounded-[8px] bg-[#fafafa] border border-[#ebebeb]">
           <div class="flex items-center justify-between">
             <div>
@@ -152,10 +155,21 @@ import Navbar from '../components/Navbar.astro';
             <input type="text" id="p-allergies" placeholder="e.g. nuts, dairy, gluten"
               class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] placeholder:text-[#888888] focus:outline-none focus:border-[#a1a1a1] transition-colors" />
           </div>
+          <div>
+            <label class="block text-[13px] font-medium text-[#171717] mb-1.5">Meals per day</label>
+            <select id="p-meals-day"
+              class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] focus:outline-none focus:border-[#a1a1a1] transition-colors">
+              <option value="2">2 meals</option>
+              <option value="3" selected>3 meals</option>
+              <option value="4">4 meals</option>
+              <option value="5">5 meals</option>
+              <option value="6">6+ meals</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <!-- Calculated targets -->
+      <!-- Calculated daily & per-meal targets -->
       <div id="targets-card" class="rounded-[12px] bg-[#171717] p-6 shadow-card-lg hidden">
         <div class="flex items-center gap-2 mb-5">
           <div class="w-5 h-5 rounded-full bg-[#50e3c2] flex items-center justify-center">
@@ -163,10 +177,16 @@ import Navbar from '../components/Navbar.astro';
               <path d="M2 5l2 2 4-4" stroke="#171717" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <p class="text-[12px] font-mono text-[#50e3c2] uppercase tracking-wide">Your daily targets</p>
+          <p class="text-[12px] font-mono text-[#50e3c2] uppercase tracking-wide">Your daily & per-meal targets</p>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="targets-grid">
           <!-- Rendered by JS -->
+        </div>
+        <div class="mt-5 pt-4 border-t border-white/10">
+          <p class="text-[11px] font-mono text-[#888888] uppercase tracking-wide mb-3">Per-meal breakdown</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="per-meal-grid">
+            <!-- Rendered by JS -->
+          </div>
         </div>
         <p class="text-[12px] text-[#888888] mt-4">Calculated using Mifflin-St Jeor equation. Update your profile to recalculate.</p>
       </div>
@@ -177,22 +197,36 @@ import Navbar from '../components/Navbar.astro';
           class="px-6 h-11 rounded-full bg-[#171717] text-white text-[15px] font-medium hover:bg-[#333] transition-colors">
           Save profile
         </button>
-        <span id="save-msg" class="hidden text-[13px] text-[#0070f3] font-mono">✓ Saved successfully</span>
+        <span id="save-msg" class="hidden text-[13px] text-[#10b981] font-mono">✓ Saved</span>
       </div>
     </form>
   </main>
 </Layout>
 
 <script>
-// ── Persist helpers ────────────────────────────────────────────────────────
-function loadProfile() {
-  try { return JSON.parse(localStorage.getItem('mct_profile') || '{}'); } catch { return {}; }
+interface ProfileData {
+  name: string; age: string; sex: string; height: string; weight: string;
+  targetWeight: string; goal: string; activity: string; diet: string;
+  allergies: string; startWeight: string; mealsPerDay: string;
 }
-function saveProfile(data: Record<string, string>) {
+
+function loadProfile(): ProfileData {
+  try { return JSON.parse(localStorage.getItem('mct_profile') || '{}'); } catch { return {} as ProfileData; }
+}
+function saveProfileLocal(data: ProfileData) {
   localStorage.setItem('mct_profile', JSON.stringify(data));
 }
 
-// ── Calculators ────────────────────────────────────────────────────────────
+async function fetchProfile(): Promise<{ email: string; profile: ProfileData | null } | null> {
+  try { const r = await fetch('/api/profile'); return r.ok ? r.json() : null; } catch { return null; }
+}
+async function syncProfileToServer(data: ProfileData): Promise<boolean> {
+  try { const r = await fetch('/api/profile', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); return r.ok; } catch { return false; }
+}
+async function registerEmail(email: string): Promise<boolean> {
+  try { const r = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) }); return r.ok; } catch { return false; }
+}
+
 function calcBMI(w: number, h: number) { return w / ((h / 100) ** 2); }
 function getBMICat(bmi: number) {
   if (bmi < 18.5) return { label: 'Underweight', color: '#007cf0', pct: 10 };
@@ -201,42 +235,59 @@ function getBMICat(bmi: number) {
   return              { label: 'Obese',       color: '#ee0000', pct: 88 };
 }
 function calcTDEE(w: number, h: number, age: number, sex: string, activity: string) {
-  const bmr = sex === 'female'
-    ? 10*w + 6.25*h - 5*age - 161
-    : 10*w + 6.25*h - 5*age + 5;
+  const bmr = sex === 'female' ? 10*w + 6.25*h - 5*age - 161 : 10*w + 6.25*h - 5*age + 5;
   const m: Record<string,number> = { sedentary:1.2, light:1.375, moderate:1.55, active:1.725, athlete:1.9 };
   return Math.round(bmr * (m[activity] || 1.55));
 }
 
-// ── DOM refs ───────────────────────────────────────────────────────────────
-const weightInput = document.getElementById('p-weight') as HTMLInputElement;
-const heightInput = document.getElementById('p-height') as HTMLInputElement;
-const ageInput    = document.getElementById('p-age') as HTMLInputElement;
-const sexSelect   = document.getElementById('p-sex') as HTMLSelectElement;
-const activitySel = document.getElementById('p-activity') as HTMLSelectElement;
-const goalSel     = document.getElementById('p-goal') as HTMLSelectElement;
-const targetWtIn  = document.getElementById('p-target-weight') as HTMLInputElement;
+const emailInput     = document.getElementById('p-email') as HTMLInputElement;
+const emailStatus    = document.getElementById('email-status')!;
+const saveMsg        = document.getElementById('save-msg')!;
+const weightInput    = document.getElementById('p-weight') as HTMLInputElement;
+const heightInput    = document.getElementById('p-height') as HTMLInputElement;
+const ageInput       = document.getElementById('p-age') as HTMLInputElement;
+const sexSelect      = document.getElementById('p-sex') as HTMLSelectElement;
+const activitySel    = document.getElementById('p-activity') as HTMLSelectElement;
+const goalSel        = document.getElementById('p-goal') as HTMLSelectElement;
+const targetWtIn     = document.getElementById('p-target-weight') as HTMLInputElement;
+const nameInput      = document.getElementById('p-name') as HTMLInputElement;
+const dietSel        = document.getElementById('p-diet') as HTMLSelectElement;
+const allergiesInput = document.getElementById('p-allergies') as HTMLInputElement;
+const mealsDaySel    = document.getElementById('p-meals-day') as HTMLSelectElement;
+const profileForm    = document.getElementById('profile-form') as HTMLFormElement;
 
-// ── Load saved profile ─────────────────────────────────────────────────────
-const saved = loadProfile();
-if (saved.name)         (document.getElementById('p-name') as HTMLInputElement).value = saved.name;
-if (saved.age)          ageInput.value = saved.age;
-if (saved.sex)          sexSelect.value = saved.sex;
-if (saved.height)       heightInput.value = saved.height;
-if (saved.weight)       weightInput.value = saved.weight;
-if (saved.targetWeight) targetWtIn.value = saved.targetWeight;
-if (saved.goal)         goalSel.value = saved.goal;
-if (saved.activity)     activitySel.value = saved.activity;
-if (saved.diet)         (document.getElementById('p-diet') as HTMLSelectElement).value = saved.diet;
-if (saved.allergies)    (document.getElementById('p-allergies') as HTMLInputElement).value = saved.allergies;
+function getFormData(): ProfileData {
+  return {
+    name: nameInput.value, age: ageInput.value, sex: sexSelect.value,
+    height: heightInput.value, weight: weightInput.value,
+    targetWeight: targetWtIn.value, goal: goalSel.value, activity: activitySel.value,
+    diet: dietSel.value, allergies: allergiesInput.value, startWeight: '',
+    mealsPerDay: mealsDaySel.value,
+  };
+}
+function getStartWeight(): string {
+  const s = loadProfile();
+  return s.startWeight || weightInput.value || '';
+}
 
-// ── Goal weight progress preview ───────────────────────────────────────────
+let autoSaveTimer: number | undefined;
+function autoSave() {
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = window.setTimeout(async () => {
+    const data = getFormData();
+    data.startWeight = getStartWeight();
+    saveProfileLocal(data);
+    await syncProfileToServer(data);
+  }, 800);
+}
+
 function updateGoalProgress() {
   const w = parseFloat(weightInput.value);
   const t = parseFloat(targetWtIn.value);
   if (!w || !t) return;
   const preview = document.getElementById('goal-progress-preview')!;
   preview.classList.remove('hidden');
+  const saved = loadProfile();
   const start = parseFloat(saved.startWeight || w.toString());
   const totalDiff = Math.abs(start - t);
   const done = Math.abs(start - w);
@@ -258,16 +309,14 @@ document.getElementById('set-goal-btn')!.addEventListener('click', () => {
   if (w && t) {
     const p = loadProfile();
     if (!p.startWeight) p.startWeight = w.toString();
-    p.targetWeight = t.toString();
-    p.weight = w.toString();
-    saveProfile(p);
+    p.targetWeight = t.toString(); p.weight = w.toString();
+    saveProfileLocal(p); syncProfileToServer(p);
     const btn = document.getElementById('set-goal-btn')!;
     btn.textContent = '✓ Saved';
     setTimeout(() => { btn.textContent = 'Set goal'; }, 2000);
   }
 });
 
-// ── Live calculations ──────────────────────────────────────────────────────
 function updateCalcs() {
   const w = parseFloat(weightInput.value);
   const h = parseFloat(heightInput.value);
@@ -275,6 +324,7 @@ function updateCalcs() {
   const sex = sexSelect.value;
   const activity = activitySel.value;
   const goal = goalSel.value;
+  const mealsPD = parseInt(mealsDaySel.value) || 3;
 
   if (w && h) {
     const bmi = calcBMI(w, h);
@@ -292,54 +342,115 @@ function updateCalcs() {
     let tdee = calcTDEE(w, h, a, sex, activity);
     let cal = goal === 'lose' ? tdee - 500 : goal === 'gain' ? tdee + 300 : tdee;
     const protein = Math.round(w * 1.8);
-    const fat     = Math.round(cal * 0.25 / 9);
-    const carbs   = Math.round((cal - protein*4 - fat*9) / 4);
-    document.getElementById('targets-card')!.classList.remove('hidden');
-    document.getElementById('targets-grid')!.innerHTML = [
-      { label: 'Calories', val: cal + ' kcal', color: '#171717' },
-      { label: 'Protein',  val: protein + 'g', color: '#3b82f6' },
-      { label: 'Carbs',    val: carbs + 'g',   color: '#f59e0b' },
-      { label: 'Fat',      val: fat + 'g',      color: '#ef4444' },
-    ].map(t => `
-      <div class="rounded-[8px] bg-white/5 border border-white/10 p-4 text-center">
-        <p class="text-[11px] font-mono text-[#888888] uppercase tracking-wide mb-1">${t.label}</p>
-        <p class="text-[20px] font-semibold tracking-[-0.6px]" style="color:${t.color}">${t.val}</p>
-      </div>`).join('');
-  }
+    const fat = Math.round(cal * 0.25 / 9);
+    const carbs = Math.round((cal - protein*4 - fat*9) / 4);
+    const perMealCal = Math.round(cal / mealsPD);
+    const perMealPro = Math.round(protein / mealsPD);
+    const perMealCarb = Math.round(carbs / mealsPD);
+    const perMealFat = Math.round(fat / mealsPD);
 
+    const targetsCard = document.getElementById('targets-card')!;
+    targetsCard.classList.remove('hidden');
+    const targetsGrid = document.getElementById('targets-grid')!;
+    targetsGrid.innerHTML = [
+      { label: 'Calories', val: cal + ' kcal', color: '#ffffff' },
+      { label: 'Protein', val: protein + 'g', color: '#3b82f6' },
+      { label: 'Carbs', val: carbs + 'g', color: '#f59e0b' },
+      { label: 'Fat', val: fat + 'g', color: '#ef4444' },
+    ].map(t => `<div class="rounded-[8px] bg-white/5 border border-white/10 p-4 text-center"><p class="text-[11px] font-mono text-[#888888] uppercase tracking-wide mb-1">${t.label}</p><p class="text-[20px] font-semibold tracking-[-0.6px]" style="color:${t.color}">${t.val}</p></div>`).join('');
+
+    const perMealGrid = document.getElementById('per-meal-grid')!;
+    perMealGrid.innerHTML = `
+      <div class="rounded-[8px] bg-white/5 border border-white/10 p-3 text-center">
+        <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-1">Calories</p>
+        <p class="text-[16px] font-semibold text-white">${perMealCal} kcal</p>
+        <p class="text-[10px] text-[#888888] mt-0.5">per meal (×${mealsPD})</p>
+      </div>
+      <div class="rounded-[8px] bg-white/5 border border-white/10 p-3 text-center">
+        <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-1">Protein</p>
+        <p class="text-[16px] font-semibold text-[#3b82f6]">${perMealPro}g</p>
+        <p class="text-[10px] text-[#888888] mt-0.5">per meal</p>
+      </div>
+      <div class="rounded-[8px] bg-white/5 border border-white/10 p-3 text-center">
+        <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-1">Carbs</p>
+        <p class="text-[16px] font-semibold text-[#f59e0b]">${perMealCarb}g</p>
+        <p class="text-[10px] text-[#888888] mt-0.5">per meal</p>
+      </div>
+      <div class="rounded-[8px] bg-white/5 border border-white/10 p-3 text-center">
+        <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-1">Fat</p>
+        <p class="text-[16px] font-semibold text-[#ef4444]">${perMealFat}g</p>
+        <p class="text-[10px] text-[#888888] mt-0.5">per meal</p>
+      </div>`;
+  }
   updateGoalProgress();
 }
 
-[weightInput, heightInput, ageInput, sexSelect, activitySel, goalSel, targetWtIn].forEach(el => {
-  el?.addEventListener('input', updateCalcs);
-  el?.addEventListener('change', updateCalcs);
-});
-
-// Run on load if data exists
-if (saved.weight || saved.height) updateCalcs();
-
-// ── Save form ──────────────────────────────────────────────────────────────
-document.getElementById('profile-form')!.addEventListener('submit', (e) => {
+profileForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const data: Record<string, string> = {
-    name:         (document.getElementById('p-name') as HTMLInputElement).value,
-    age:          ageInput.value,
-    sex:          sexSelect.value,
-    height:       heightInput.value,
-    weight:       weightInput.value,
-    targetWeight: targetWtIn.value,
-    goal:         goalSel.value,
-    activity:     activitySel.value,
-    diet:         (document.getElementById('p-diet') as HTMLSelectElement).value,
-    allergies:    (document.getElementById('p-allergies') as HTMLInputElement).value,
-  };
-  // Preserve startWeight
-  const existing = loadProfile();
-  if (existing.startWeight) data.startWeight = existing.startWeight;
-  else if (data.weight) data.startWeight = data.weight;
-  saveProfile(data);
-  const msg = document.getElementById('save-msg')!;
-  msg.classList.remove('hidden');
-  setTimeout(() => msg.classList.add('hidden'), 3000);
+  const data = getFormData();
+  data.startWeight = getStartWeight();
+  saveProfileLocal(data);
+  const email = emailInput.value.trim();
+  let synced = false;
+  if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    const registered = await registerEmail(email);
+    if (registered) synced = await syncProfileToServer(data);
+  } else {
+    synced = await syncProfileToServer(data);
+  }
+  saveMsg.textContent = synced ? '✓ Saved to cloud' : '✓ Saved locally';
+  saveMsg.className = 'text-[13px] font-mono ' + (synced ? 'text-[#10b981]' : 'text-[#f5a623]');
+  saveMsg.classList.remove('hidden');
+  setTimeout(() => saveMsg.classList.add('hidden'), 3000);
 });
+
+async function init() {
+  const local = loadProfile();
+  if (local.name) nameInput.value = local.name;
+  if (local.age) ageInput.value = local.age;
+  if (local.sex) sexSelect.value = local.sex;
+  if (local.height) heightInput.value = local.height;
+  if (local.weight) weightInput.value = local.weight;
+  if (local.targetWeight) targetWtIn.value = local.targetWeight;
+  if (local.goal) goalSel.value = local.goal;
+  if (local.activity) activitySel.value = local.activity;
+  if (local.diet) dietSel.value = local.diet;
+  if (local.allergies) allergiesInput.value = local.allergies;
+  if (local.mealsPerDay) mealsDaySel.value = local.mealsPerDay;
+
+  const serverData = await fetchProfile();
+  if (serverData?.profile) {
+    const p = serverData.profile;
+    if (p.name) nameInput.value = p.name;
+    if (p.age) ageInput.value = p.age;
+    if (p.sex) sexSelect.value = p.sex;
+    if (p.height) heightInput.value = p.height;
+    if (p.weight) weightInput.value = p.weight;
+    if (p.targetWeight) targetWtIn.value = p.targetWeight;
+    if (p.goal) goalSel.value = p.goal;
+    if (p.activity) activitySel.value = p.activity;
+    if (p.diet) dietSel.value = p.diet;
+    if (p.allergies) allergiesInput.value = p.allergies;
+    if (p.mealsPerDay) mealsDaySel.value = p.mealsPerDay;
+    if (p.startWeight) { const s = loadProfile(); s.startWeight = p.startWeight; saveProfileLocal(s); }
+    saveProfileLocal(p);
+  }
+
+  if (serverData?.email) {
+    emailInput.value = serverData.email;
+    emailStatus.textContent = '✓ Signed in';
+    emailStatus.className = 'text-[12px] font-mono text-[#10b981] mt-1';
+    emailStatus.classList.remove('hidden');
+  }
+
+  const allFields = [nameInput, ageInput, sexSelect, heightInput, weightInput, targetWtIn, goalSel, activitySel, dietSel, allergiesInput, emailInput, mealsDaySel];
+  allFields.forEach(el => {
+    el.addEventListener('input', () => { autoSave(); updateCalcs(); });
+    el.addEventListener('change', () => { autoSave(); updateCalcs(); });
+  });
+
+  if (local.weight || local.height || local.age) updateCalcs();
+}
+
+init();
 </script>

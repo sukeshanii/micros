@@ -71,13 +71,14 @@ const { currentPage = '/' } = Astro.props;
 
       <a
         href="/profile"
+        id="nav-profile-link"
         class="hidden sm:flex items-center gap-1.5 px-3 h-7 rounded-[6px] text-[13px] font-medium text-[#171717] border border-[#ebebeb] bg-white hover:bg-[#fafafa] transition-colors dark:text-white dark:bg-[#1a1a1a] dark:border-[#333333] dark:hover:bg-[#2a2a2a]"
       >
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
           <circle cx="6" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/>
           <path d="M1.5 10.5c0-2.485 2.015-4.5 4.5-4.5s4.5 2.015 4.5 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
         </svg>
-        Profile
+        <span id="nav-profile-label">Profile</span>
       </a>
       <a
         href="/"
@@ -133,4 +134,17 @@ const { currentPage = '/' } = Astro.props;
   menuToggle?.addEventListener('click', openMenu);
   menuClose?.addEventListener('click', closeMenu);
   menuBackdrop?.addEventListener('click', closeMenu);
+
+  // Check login status for profile badge
+  const profileLabel = document.getElementById('nav-profile-label');
+  if (profileLabel) {
+    fetch('/api/profile', { credentials: 'same-origin' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.email) {
+          profileLabel.textContent = data.email.split('@')[0];
+        }
+      })
+      .catch(() => {});
+  }
 </script>
