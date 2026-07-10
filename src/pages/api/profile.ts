@@ -65,7 +65,13 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
       });
     }
 
-    const enriched = { ...body, ...targets };
+    const enriched = {
+      ...body,
+      dailyCalories: (targets as any).calories || body.dailyCalories || 2000,
+      dailyProtein: (targets as any).protein || body.dailyProtein || 100,
+      dailyCarbs: (targets as any).carbs || body.dailyCarbs || 250,
+      dailyFat: (targets as any).fat || body.dailyFat || 65,
+    };
     await upsertProfile(userId, enriched);
 
     return new Response(JSON.stringify({ ok: true, calculated: targets }), {

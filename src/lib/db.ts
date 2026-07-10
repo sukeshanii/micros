@@ -82,7 +82,8 @@ export async function upsertProfile(userId: number, data: any): Promise<void> {
   if (existing.length > 0) {
     await db.execute(`UPDATE profiles SET ${cols} WHERE user_id = ?`, [...vals, userId]);
   } else {
-    const insCols = `user_id,${cols.replace(/=?\?/g,',?').replace(/^,/, '')}`;
+    const colNames = cols.replace(/=\?/g, '');
+    const insCols = `user_id,${colNames}`;
     await db.execute(`INSERT INTO profiles (${insCols}) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, [userId, ...vals]);
   }
   await cacheDel(profileCacheKey(userId));

@@ -200,6 +200,46 @@ import Navbar from '../components/Navbar.astro';
         <span id="save-msg" class="hidden text-[13px] text-[#10b981] font-mono">✓ Saved</span>
       </div>
     </form>
+
+    <!-- Success notification -->
+    <div id="success-notification" class="hidden mt-8 rounded-[12px] bg-[#f0fdf4] border border-[#bbf7d0] p-6 text-center">
+      <div class="w-12 h-12 rounded-full bg-[#10b981] flex items-center justify-center mx-auto mb-4">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M5 10l3 3 7-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p class="text-[18px] font-semibold text-[#171717] mb-1">Profile saved successfully.</p>
+      <p class="text-[14px] text-[#4d4d4d] mb-6">Your nutrition targets are now personalised.</p>
+      <a href="/#scanner" class="inline-flex items-center px-6 h-11 rounded-full bg-[#171717] text-white text-[15px] font-medium hover:bg-[#333] transition-colors gap-2">
+        Continue to Scan Your Meal
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M6 4l4 4-4 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Profile complete state (shown for returning users) -->
+    <div id="profile-complete-state" class="hidden mt-8 rounded-[12px] bg-white border border-[#ebebeb] p-8 text-center shadow-card">
+      <div class="w-14 h-14 rounded-full bg-[#f0fdf4] border border-[#bbf7d0] flex items-center justify-center mx-auto mb-4">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="#10b981" stroke-width="1.5" fill="none"/>
+          <path d="M8 12l3 3 5-5" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p class="text-[20px] font-semibold text-[#171717] mb-1">Your profile is complete.</p>
+      <p class="text-[14px] text-[#4d4d4d] mb-6">We have all the information needed to personalise your nutrition targets.</p>
+      <div class="flex items-center justify-center gap-3">
+        <a href="/#scanner" class="inline-flex items-center px-6 h-11 rounded-full bg-[#171717] text-white text-[15px] font-medium hover:bg-[#333] transition-colors gap-2">
+          Scan Your Meal
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 4l4 4-4 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="right"/>
+          </svg>
+        </a>
+        <button id="edit-profile-btn" class="px-5 h-11 rounded-full bg-white text-[#171717] text-[14px] font-medium border border-[#ebebeb] hover:bg-[#fafafa] transition-colors">
+          Edit profile
+        </button>
+      </div>
+    </div>
   </main>
 </Layout>
 
@@ -385,11 +425,35 @@ function updateCalcs() {
   updateGoalProgress();
 }
 
+const successNotification = document.getElementById('success-notification')!;
+const profileCompleteState = document.getElementById('profile-complete-state')!;
+const profileFormEl = document.getElementById('profile-form')!;
+const editProfileBtn = document.getElementById('edit-profile-btn') as HTMLButtonElement;
+
+function isProfileComplete(p: ProfileData | null): boolean {
+  if (!p) return false;
+  return !!(
+    p.name && p.age && p.sex && p.height && p.weight &&
+    p.goal && p.activity && p.mealsPerDay
+  );
+}
+
+function showSuccessNotification() {
+  successNotification.classList.remove('hidden');
+  successNotification.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  profileFormEl.querySelector('button[type="submit"]')?.classList.add('hidden');
+}
+
 profileForm.addEventListener('submit', async (e) => {
   e.preventDefault();
+  const submitBtn = profileFormEl.querySelector('button[type="submit"]') as HTMLButtonElement;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Saving...';
+
   const data = getFormData();
   data.startWeight = getStartWeight();
   saveProfileLocal(data);
+
   const email = emailInput.value.trim();
   let synced = false;
   if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -398,10 +462,23 @@ profileForm.addEventListener('submit', async (e) => {
   } else {
     synced = await syncProfileToServer(data);
   }
-  saveMsg.textContent = synced ? '✓ Saved to cloud' : '✓ Saved locally';
-  saveMsg.className = 'text-[13px] font-mono ' + (synced ? 'text-[#10b981]' : 'text-[#f5a623]');
-  saveMsg.classList.remove('hidden');
-  setTimeout(() => saveMsg.classList.add('hidden'), 3000);
+
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'Save profile';
+
+  if (synced) {
+    showSuccessNotification();
+  } else {
+    saveMsg.textContent = '✓ Saved locally';
+    saveMsg.className = 'text-[13px] font-mono text-[#10b981]';
+    saveMsg.classList.remove('hidden');
+    setTimeout(() => saveMsg.classList.add('hidden'), 3000);
+  }
+});
+
+editProfileBtn?.addEventListener('click', () => {
+  profileCompleteState.classList.add('hidden');
+  profileFormEl.classList.remove('hidden');
 });
 
 async function init() {
@@ -434,6 +511,12 @@ async function init() {
     if (p.mealsPerDay) mealsDaySel.value = p.mealsPerDay;
     if (p.startWeight) { const s = loadProfile(); s.startWeight = p.startWeight; saveProfileLocal(s); }
     saveProfileLocal(p);
+
+    // If profile is complete, show the complete state instead of the form
+    if (isProfileComplete(p)) {
+      profileFormEl.classList.add('hidden');
+      profileCompleteState.classList.remove('hidden');
+    }
   }
 
   if (serverData?.email) {
