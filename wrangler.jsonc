@@ -1,0 +1,19 @@
+{
+  "name": "micro-calorie-tracker",
+  "compatibility_date": "2026-07-16",
+  "pages_build_output_dir": "./dist",
+  "build_command": "npx astro build --config astro.config.cloudflare.mjs",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "micros-db",
+      "database_id": "cfe1dd23-0420-4b51-b2ad-dff57c0da715"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "CACHE",
+      "id": "6cd185a09a8c42c382a2b97d1ed766ba"
+    }
+  ]
+}

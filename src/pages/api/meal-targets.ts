@@ -17,12 +17,14 @@ export const GET: APIRoute = async ({ cookies, url }) => {
   try {
     let targets = { calories: 2000, protein: 100, carbs: 250, fat: 65 };
     let mealsPerDay = 3;
+    let hasProfile = false;
 
     if (userId) {
       const prof = await getProfile(userId);
       if (prof) {
         targets = { calories: prof.daily_calories, protein: prof.daily_protein, carbs: prof.daily_carbs, fat: prof.daily_fat };
         mealsPerDay = prof.meals_per_day;
+        hasProfile = true;
       }
     } else if (guestToken) {
       const gs = await getGuestSession(guestToken);
@@ -45,6 +47,7 @@ export const GET: APIRoute = async ({ cookies, url }) => {
         carbs: perMeal.carbs,
         fat: perMeal.fat,
       },
+      hasProfile,
     }), {
       status: 200, headers: { 'Content-Type': 'application/json' },
     });

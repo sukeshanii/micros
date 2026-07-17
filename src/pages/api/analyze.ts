@@ -1,4 +1,7 @@
 import type { APIRoute } from 'astro';
+import { getSessionUserId } from '../../lib/auth';
+import { getProfile, getGuestSession, getDailySummary } from '../../lib/db';
+import { perMealTargets } from '../../lib/nutrition';
 
 const DISH_DB: Record<string, { calPer100: number; proteinPer100: number; carbsPer100: number; fatPer100: number; fiberPer100: number; ingredients: string[] }> = {
   'chicken biryani': { calPer100: 150, proteinPer100: 8, carbsPer100: 18, fatPer100: 5, fiberPer100: 0.6, ingredients: ['Basmati Rice', 'Chicken', 'Onion', 'Yogurt', 'Ghee', 'Saffron', 'Bay Leaf', 'Cardamom', 'Cinnamon', 'Cloves', 'Mint', 'Coriander', 'Ginger', 'Garlic', 'Green Chilli', 'Salt'] },
@@ -53,13 +56,11 @@ function matchDish(dishName: string) {
   return bestScore >= 10 && bestKey ? DISH_DB[bestKey] : DEFAULT_DISH;
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   try {
     let dishName = '';
     let weight = 350;
-    let age = 25;
-    let userWeight = 70;
-    let goal = 'maintain';
+    let guestToken = '';
 
     const contentType = request.headers.get('content-type') || '';
 
@@ -67,16 +68,12 @@ export const POST: APIRoute = async ({ request }) => {
       const formData = await request.formData();
       dishName = (formData.get('dishName') as string) || '';
       weight = parseInt(formData.get('weight') as string) || 350;
-      age = parseInt(formData.get('age') as string) || 25;
-      userWeight = parseInt(formData.get('userWeight') as string) || 70;
-      goal = (formData.get('goal') as string) || 'maintain';
+      guestToken = (formData.get('guestToken') as string) || '';
     } else {
       const body = await request.json();
       dishName = body.dishName || '';
       weight = body.weight || 350;
-      age = body.age || 25;
-      userWeight = body.userWeight || 70;
-      goal = body.goal || 'maintain';
+      guestToken = body.guestToken || '';
     }
 
     const dish = matchDish(dishName);
@@ -87,12 +84,87 @@ export const POST: APIRoute = async ({ request }) => {
     const fat = Math.round(dish.fatPer100 * s);
     const fiber = Math.round(dish.fiberPer100 * s);
 
+    let targets = { calories: 2000, protein: 100, carbs: 250, fat: 65 };
+    let mealsPerDay = 3;
+    let userId: number | null = null;
+    let hasProfile = false;
+
+    userId = await getSessionUserId(cookies);
+
+    if (userId) {
+      const prof = await getProfile(userId);
+      if (prof) {
+        targets = { calories: prof.daily_calories, protein: prof.daily_protein, carbs: prof.daily_carbs, fat: prof.daily_fat };
+        mealsPerDay = prof.meals_per_day;
+        hasProfile = true;
+      }
+    } else if (guestToken) {
+      const gs = await getGuestSession(guestToken);
+      if (gs) {
+        targets = { calories: gs.daily_calories, protein: gs.daily_protein, carbs: gs.daily_carbs, fat: gs.daily_fat };
+        mealsPerDay = gs.meals_per_day;
+      }
+    }
+
+    const perMeal = perMealTargets(targets.calories, targets.protein, targets.carbs, targets.fat, mealsPerDay);
+
+    const today = new Date().toISOString().slice(0, 10);
+    let consumed = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, meals: 0 };
+    try {
+      const summary = await getDailySummary(userId || undefined, guestToken || undefined, today);
+      if (summary) {
+        consumed = {
+          calories: Number(summary.total_calories) || 0,
+          protein: Number(summary.total_protein) || 0,
+          carbs: Number(summary.total_carbs) || 0,
+          fat: Number(summary.total_fat) || 0,
+          fiber: Number(summary.total_fiber) || 0,
+          meals: Number(summary.meal_count) || 0,
+        };
+      }
+    } catch {}
+
+    const remaining = {
+      calories: Math.max(0, targets.calories - consumed.calories),
+      protein: Math.max(0, targets.protein - consumed.protein),
+      carbs: Math.max(0, targets.carbs - consumed.carbs),
+      fat: Math.max(0, targets.fat - consumed.fat),
+    };
+
+    const progress = {
+      calories: targets.calories ? Math.min(100, Math.round((consumed.calories + calories) / targets.calories * 100)) : 0,
+      protein: targets.protein ? Math.min(100, Math.round((consumed.protein + protein) / targets.protein * 100)) : 0,
+      carbs: targets.carbs ? Math.min(100, Math.round((consumed.carbs + carbs) / targets.carbs * 100)) : 0,
+      fat: targets.fat ? Math.min(100, Math.round((consumed.fat + fat) / targets.fat * 100)) : 0,
+    };
+
     const suggestions: string[] = [];
-    if (protein < 30) suggestions.push('Add a protein source — grilled chicken, tofu, or lentils — to hit your daily target.');
-    if (fiber < 8) suggestions.push('Include leafy greens (spinach, kale) or legumes to boost fibre intake.');
-    if (goal === 'lose') suggestions.push('Reduce portion by ~15% and add a side salad to stay satiated with fewer calories.');
-    if (goal === 'gain') suggestions.push('Add a handful of nuts or a protein shake alongside this meal to support muscle growth.');
-    if (suggestions.length === 0) suggestions.push('Great balance! Your meal covers key macros well. Stay hydrated.');
+    const calPct = Math.round((calories - perMeal.calories) / perMeal.calories * 100);
+    const proPct = Math.round((protein - perMeal.protein) / perMeal.protein * 100);
+    const carbPct = Math.round((carbs - perMeal.carbs) / perMeal.carbs * 100);
+    const fatPct = Math.round((fat - perMeal.fat) / perMeal.fat * 100);
+
+    const calDir = calPct > 0 ? 'above' : calPct < 0 ? 'below' : 'at';
+    const proDir = proPct > 0 ? 'above' : proPct < 0 ? 'below' : 'at';
+    const carbDir = carbPct > 0 ? 'above' : carbPct < 0 ? 'below' : 'at';
+    const fatDir = fatPct > 0 ? 'above' : fatPct < 0 ? 'below' : 'at';
+
+    const intro = hasProfile
+      ? `Based on your profile, your target is ${perMeal.calories} kcal, ${perMeal.protein}g protein, ${perMeal.carbs}g carbs, and ${perMeal.fat}g fat per meal.`
+      : `Your target is ${perMeal.calories} kcal, ${perMeal.protein}g protein, ${perMeal.carbs}g carbs, and ${perMeal.fat}g fat per meal.`;
+    suggestions.push(
+      `${intro} ` +
+      `This meal provides ${calories} kcal and ${protein}g protein. ` +
+      `Calories are ${calDir} target by ${Math.abs(calPct)}% while protein is ${proDir} target by ${Math.abs(proPct)}%.`
+    );
+
+    if (calPct > 15) suggestions.push('Calories are significantly above your per-meal target. Consider reducing portion size or choosing lighter ingredients.');
+    if (proPct < -15) suggestions.push('Protein is well below your per-meal target. Add a lean protein source like chicken, tofu, or lentils.');
+    if (proPct > 20) suggestions.push('Great protein intake! This helps with satiety and muscle maintenance.');
+    if (carbPct > 20) suggestions.push('Carbs are above your target. Consider swapping refined carbs for whole grains or vegetables.');
+    if (fatPct > 20) suggestions.push('Fat is above your target. Try reducing oil, butter, or creamy sauces.');
+    if (fiber < 8) suggestions.push('Include leafy greens or legumes to boost fibre intake.');
+    if (suggestions.length < 2) suggestions.push('Overall a balanced meal. Keep up the good habits!');
 
     const microBase = s / 3.5;
     const micros: Record<string, { val: number; unit: string; ref: number }> = {
@@ -120,6 +192,13 @@ export const POST: APIRoute = async ({ request }) => {
       ingredients: dish.ingredients,
       suggestions,
       nextMeals: [],
+      perMealTarget: perMeal,
+      dailyTarget: targets,
+      mealsPerDay,
+      consumed,
+      remaining,
+      progress,
+      hasProfile,
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },

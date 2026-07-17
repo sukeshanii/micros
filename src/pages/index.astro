@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
 ---
 
-<Layout title="Micro & Calorie Tracker — Best Free AI Calorie & Protein Tracker Online" canonical="https://microcalorietracker.com">
+<Layout title="Micro & Calorie Tracker — Best Free AI Calorie & Protein Tracker Online" canonical="https://microcalorietracker.online">
   <Navbar currentPage="/" />
 
   <!-- Hero Band -->
@@ -130,7 +130,13 @@ import Navbar from '../components/Navbar.astro';
             />
           </div>
           <div>
-            <label for="meal-weight" class="block text-[13px] font-medium text-[#171717] mb-1.5">Approx. weight <span class="text-[#888888] font-normal">(grams)</span></label>
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="meal-weight" class="block text-[13px] font-medium text-[#171717]">Approx. weight</label>
+              <div id="mw-unit-toggle" class="rounded-[4px] border border-[#ebebeb] overflow-hidden text-[11px] font-medium">
+                <button type="button" id="mw-unit-g" class="px-1.5 py-0.5 bg-[#171717] text-white transition-colors">g</button>
+                <button type="button" id="mw-unit-ml" class="px-1.5 py-0.5 text-[#888888] hover:text-[#171717] transition-colors">ml</button>
+              </div>
+            </div>
             <input
               type="number"
               id="meal-weight"
@@ -139,6 +145,7 @@ import Navbar from '../components/Navbar.astro';
               max="5000"
               class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] placeholder:text-[#888888] focus:outline-none focus:border-[#a1a1a1] transition-colors"
             />
+            <p id="mw-unit-label" class="text-[11px] text-[#888888] mt-1">grams</p>
           </div>
         </div>
 
@@ -152,8 +159,14 @@ import Navbar from '../components/Navbar.astro';
                 class="w-full h-9 px-2.5 rounded-[6px] border border-[#ebebeb] bg-white text-[13px] focus:outline-none focus:border-[#a1a1a1]" />
             </div>
             <div>
-              <label for="quick-weight" class="block text-[12px] text-[#888888] mb-1">Weight (kg)</label>
-              <input type="number" id="quick-weight" placeholder="70" min="20" max="300"
+              <div class="flex items-center justify-between mb-1">
+                <label for="quick-weight" class="block text-[12px] text-[#888888]">Weight</label>
+                <div class="flex rounded-[4px] border border-[#ebebeb] overflow-hidden text-[11px] font-medium">
+                  <button type="button" id="qw-unit-kg" class="px-1.5 py-0.5 bg-[#171717] text-white transition-colors">kg</button>
+                  <button type="button" id="qw-unit-lbs" class="px-1.5 py-0.5 text-[#888888] hover:text-[#171717] transition-colors">lbs</button>
+                </div>
+              </div>
+              <input type="number" id="quick-weight" placeholder="70" min="0" max="700"
                 class="w-full h-9 px-2.5 rounded-[6px] border border-[#ebebeb] bg-white text-[13px] focus:outline-none focus:border-[#a1a1a1]" />
             </div>
             <div>
@@ -242,15 +255,16 @@ import Navbar from '../components/Navbar.astro';
 
           <!-- Meal Analysis: Estimated / Target / Difference -->
           <div id="per-meal-comparison" class="hidden rounded-[12px] bg-white border border-[#ebebeb] p-5 shadow-card">
-            <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide mb-3">Meal Analysis</p>
-            <div id="comparison-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"><!-- JS --></div>
+            <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide mb-1">Meal Analysis</p>
+            <p id="comparison-ref-label" class="text-[11px] font-mono text-[#888888] mb-3">Compared with standard daily nutrition recommendations</p>
+            <div id="comparison-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-3"><!-- JS --></div>
           </div>
 
           <!-- Full Nutrition Report Table (blood-report style) -->
           <div class="rounded-[12px] bg-white border border-[#ebebeb] overflow-hidden shadow-card">
             <div class="px-5 py-4 border-b border-[#ebebeb] flex items-center justify-between">
               <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide">Nutrition report</p>
-              <span class="text-[11px] font-mono text-[#888888]">vs. daily reference intake</span>
+              <span id="nreport-ref-label" class="text-[11px] font-mono text-[#888888]">Compared with standard daily nutrition recommendations</span>
             </div>
             <!-- Tab switcher -->
             <div class="flex border-b border-[#ebebeb]">
@@ -264,7 +278,7 @@ import Navbar from '../components/Navbar.astro';
                 <div class="grid grid-cols-5 px-5 py-2 bg-[#fafafa] border-b border-[#ebebeb]">
                   <span class="col-span-2 text-[11px] font-mono text-[#888888] uppercase tracking-wide">Nutrient</span>
                   <span class="text-[11px] font-mono text-[#888888] uppercase tracking-wide text-right">This meal</span>
-                  <span class="text-[11px] font-mono text-[#888888] uppercase tracking-wide text-right">Daily ref.</span>
+                  <span id="nreport-ref-col" class="text-[11px] font-mono text-[#888888] uppercase tracking-wide text-right">Daily ref.</span>
                   <span class="text-[11px] font-mono text-[#888888] uppercase tracking-wide text-right">Status</span>
                 </div>
                 <div id="nutrition-table-macros" class="divide-y divide-[#ebebeb]"><!-- JS --></div>
@@ -558,7 +572,7 @@ import Navbar from '../components/Navbar.astro';
             <span class="text-[13px] font-semibold text-[#171717]">micro&calorie tracker</span>
           </div>
           <p class="text-[13px] text-[#888888] max-w-xs">AI-powered nutrition tracking<br />for smarter, healthier eating.</p>
-          <p class="text-[12px] font-mono text-[#888888] mt-2">microcalorietracker.com</p>
+          <p class="text-[12px] font-mono text-[#888888] mt-2">microcalorietracker.online</p>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-8 text-[13px]">
           <div>
@@ -598,6 +612,10 @@ interface NutritionResult {
   ingredients: string[];
   suggestions: string[];
   nextMeals: { name: string; emoji: string; cal: number; reason: string }[];
+  perMealTarget?: { calories: number; protein: number; carbs: number; fat: number };
+  dailyTarget?: { calories: number; protein: number; carbs: number; fat: number };
+  mealsPerDay?: number;
+  hasProfile?: boolean;
 }
 interface LoggedMeal { name: string; calories: number; protein: number; carbs: number; fat: number; time: string; ingredients: string[]; }
 
@@ -618,31 +636,42 @@ const savedProfile = loadProfile();
 // ── Per-meal targets from server ──────────────────────────────────────────
 let PER_MEAL_TARGETS = { calories: 667, protein: 33, carbs: 83, fat: 22 };
 let DAILY_TARGETS = { calories: 2000, protein: 100, carbs: 250, fat: 65 };
+let HAS_PROFILE = false;
 const defaultMeals = parseInt(savedProfile.mealsPerDay) || 3;
 let MEALS_PER_DAY = defaultMeals;
 
+function calColor() {
+  return '#ec4899';
+}
+
 async function loadTargets() {
+  try {
+    const r = await fetch('/api/meal-targets');
+    if (r.ok) {
+      const data = await r.json();
+      HAS_PROFILE = data.hasProfile === true;
+      DAILY_TARGETS = data.daily;
+      PER_MEAL_TARGETS = data.currentMealTarget;
+      MEALS_PER_DAY = data.mealsPerDay;
+      renderDailyProgress();
+      renderTimeline();
+      return;
+    }
+  } catch {}
   if (GUEST_TOKEN) {
     try {
       const r = await fetch(`/api/meal-targets?guest_token=${GUEST_TOKEN}`);
       if (r.ok) {
         const data = await r.json();
+        HAS_PROFILE = data.hasProfile === true;
         DAILY_TARGETS = data.daily;
         PER_MEAL_TARGETS = data.currentMealTarget;
         MEALS_PER_DAY = data.mealsPerDay;
-        return;
+        renderDailyProgress();
+        renderTimeline();
       }
     } catch {}
   }
-  try {
-    const r = await fetch('/api/meal-targets');
-    if (r.ok) {
-      const data = await r.json();
-      DAILY_TARGETS = data.daily;
-      PER_MEAL_TARGETS = data.currentMealTarget;
-      MEALS_PER_DAY = data.mealsPerDay;
-    }
-  } catch {}
 }
 
 // ── Persistent daily log (localStorage) ───────────────────────────────────
@@ -684,6 +713,46 @@ const quickAge       = document.getElementById('quick-age') as HTMLInputElement;
 const quickWeight    = document.getElementById('quick-weight') as HTMLInputElement;
 const quickGoal      = document.getElementById('quick-goal') as HTMLSelectElement;
 const quickMeals     = document.getElementById('quick-meals') as HTMLSelectElement;
+const dishNameInput  = document.getElementById('dish-name') as HTMLInputElement;
+const mwUnitToggle   = document.getElementById('mw-unit-toggle')!;
+const mwUnitG        = document.getElementById('mw-unit-g') as HTMLButtonElement;
+const mwUnitMl       = document.getElementById('mw-unit-ml') as HTMLButtonElement;
+const mwUnitLabel    = document.getElementById('mw-unit-label')!;
+const qwUnitKg       = document.getElementById('qw-unit-kg') as HTMLButtonElement;
+const qwUnitLbs      = document.getElementById('qw-unit-lbs') as HTMLButtonElement;
+
+let mealWeightUnit: 'g' | 'ml' = 'g';
+const LIQUID_KEYWORDS = ['soup','smoothie','dal','kheer','milk','shake','juice','broth','tea','coffee','lassi','buttermilk','protein shake','milkshake','yogurt','curd','pudding','custard','gravy'];
+function isLiquidDish(name: string): boolean {
+  const lower = name.toLowerCase().trim();
+  return LIQUID_KEYWORDS.some(k => lower.includes(k));
+}
+
+// ── Meal weight unit toggle (grams/ml for liquids) ───────────────────────
+function setMealWeightUnit(unit: 'g' | 'ml') {
+  mealWeightUnit = unit;
+  if (unit === 'ml') {
+    mwUnitG.className = 'px-1.5 py-0.5 text-[#888888] hover:text-[#171717] transition-colors';
+    mwUnitMl.className = 'px-1.5 py-0.5 bg-[#171717] text-white transition-colors';
+    mwUnitLabel.textContent = 'millilitres (ml)';
+  } else {
+    mwUnitG.className = 'px-1.5 py-0.5 bg-[#171717] text-white transition-colors';
+    mwUnitMl.className = 'px-1.5 py-0.5 text-[#888888] hover:text-[#171717] transition-colors';
+    mwUnitLabel.textContent = 'grams';
+  }
+}
+
+mwUnitG.addEventListener('click', () => setMealWeightUnit('g'));
+mwUnitMl.addEventListener('click', () => setMealWeightUnit('ml'));
+
+// Liquid detection — auto-suggest ml for liquid dishes
+dishNameInput.addEventListener('input', () => {
+  if (isLiquidDish(dishNameInput.value) && mealWeightUnit === 'g') {
+    setMealWeightUnit('ml');
+  } else if (!isLiquidDish(dishNameInput.value) && mealWeightUnit === 'ml') {
+    setMealWeightUnit('g');
+  }
+});
 
 // ── Profile check — hide quick-fill if already saved ───────────────────────
 const hasProfile = savedProfile.age && savedProfile.weight && savedProfile.goal;
@@ -701,7 +770,9 @@ if (hasProfile) {
 function saveQuickProfile() {
   const data = loadProfile();
   data.age = quickAge.value;
-  data.weight = quickWeight.value;
+  const unit = data.weightUnit || 'kg';
+  const raw = parseFloat(quickWeight.value) || 0;
+  data.weight = unit === 'lbs' && raw > 0 ? String(Math.round((raw / 2.20462) * 10) / 10) : String(raw);
   data.goal = quickGoal.value;
   data.mealsPerDay = quickMeals.value;
   localStorage.setItem('mct_profile', JSON.stringify(data));
@@ -712,12 +783,31 @@ quickWeight.addEventListener('input', saveQuickProfile);
 quickGoal.addEventListener('change', saveQuickProfile);
 quickMeals.addEventListener('change', saveQuickProfile);
 
-// ── Load targets if guest token exists ────────────────────────────────────
-(async () => {
-  if (GUEST_TOKEN) {
-    await loadTargets();
+// ── Quick weight unit toggle ─────────────────────────────────────────────
+function setQuickWeightUnit(unit: 'kg' | 'lbs') {
+  const qp = loadProfile();
+  const kgVal = parseFloat(qp.weight) || 0;
+  qp.weightUnit = unit;
+  localStorage.setItem('mct_profile', JSON.stringify(qp));
+  if (unit === 'lbs') {
+    quickWeight.placeholder = '154';
+    quickWeight.value = kgVal > 0 ? (kgVal * 2.20462).toFixed(1) : '';
+    qwUnitKg.className = 'px-1.5 py-0.5 text-[#888888] hover:text-[#171717] transition-colors';
+    qwUnitLbs.className = 'px-1.5 py-0.5 bg-[#171717] text-white transition-colors';
+  } else {
+    quickWeight.placeholder = '70';
+    quickWeight.value = kgVal > 0 ? kgVal.toFixed(1) : '';
+    qwUnitKg.className = 'px-1.5 py-0.5 bg-[#171717] text-white transition-colors';
+    qwUnitLbs.className = 'px-1.5 py-0.5 text-[#888888] hover:text-[#171717] transition-colors';
   }
-})();
+}
+
+qwUnitKg.addEventListener('click', () => setQuickWeightUnit('kg'));
+qwUnitLbs.addEventListener('click', () => setQuickWeightUnit('lbs'));
+
+// Restore quick weight unit from profile
+const qwInitProfile = loadProfile();
+if (qwInitProfile.weightUnit === 'lbs') setQuickWeightUnit('lbs');
 
 // ── Upload handling ────────────────────────────────────────────────────────
 let selectedFile: File | null = null;
@@ -769,11 +859,7 @@ function clearPreview() {
 }
 
 cameraBtn.addEventListener('click', () => {
-  if ('capture' in document.createElement('input')) {
-    cameraInput.click();
-  } else {
-    galleryInput.click();
-  }
+  cameraInput.click();
 });
 
 galleryBtn.addEventListener('click', () => {
@@ -981,14 +1067,30 @@ function getMockResult(dishName: string, weight: number, age: number, userWeight
   const fat      = Math.round(dish.fatPer100 * s);
   const fiber    = Math.round(dish.fiberPer100 * s);
 
+  const pt = PER_MEAL_TARGETS;
+  const dt = DAILY_TARGETS;
   const sugg: string[] = [];
-  if (protein < 30) sugg.push('Add a protein source — grilled chicken, tofu, or lentils — to hit your daily target.');
-  if (fiber < 8)    sugg.push('Include leafy greens (spinach, kale) or legumes to boost fibre intake.');
-  if (goal === 'lose') sugg.push('Reduce portion by ~15% and add a side salad to stay satiated with fewer calories.');
-  if (goal === 'gain') sugg.push('Add a handful of nuts or a protein shake alongside this meal to support muscle growth.');
-  if (age > 40)     sugg.push('Prioritise calcium-rich foods (dairy, broccoli) to support bone density.');
-  if (userWeight > 90) sugg.push('Swap refined carbs for whole grains to improve insulin sensitivity.');
-  if (sugg.length === 0) sugg.push('Great balance! Your meal covers key macros well. Stay hydrated.');
+  const calPct = Math.round((calories - pt.calories) / pt.calories * 100);
+  const proPct = Math.round((protein - pt.protein) / pt.protein * 100);
+  const carbPct = Math.round((carbs - pt.carbs) / pt.carbs * 100);
+  const fatPct = Math.round((fat - pt.fat) / pt.fat * 100);
+  const calDir = calPct > 0 ? 'above' : calPct < 0 ? 'below' : 'at';
+  const proDir = proPct > 0 ? 'above' : proPct < 0 ? 'below' : 'at';
+  const intro = HAS_PROFILE
+    ? `Based on your profile, your target is ${pt.calories} kcal, ${pt.protein}g protein, ${pt.carbs}g carbs, and ${pt.fat}g fat per meal.`
+    : `Your target is ${pt.calories} kcal, ${pt.protein}g protein, ${pt.carbs}g carbs, and ${pt.fat}g fat per meal.`;
+  sugg.push(
+    `${intro} ` +
+    `This meal provides ${calories} kcal and ${protein}g protein. ` +
+    `Calories are ${calDir} target by ${Math.abs(calPct)}% while protein is ${proDir} target by ${Math.abs(proPct)}%.`
+  );
+  if (calPct > 15) sugg.push('Calories are significantly above your per-meal target. Consider reducing portion size or choosing lighter ingredients.');
+  if (proPct < -15) sugg.push('Protein is well below your per-meal target. Add a lean protein source like chicken, tofu, or lentils.');
+  if (proPct > 20) sugg.push('Great protein intake! This helps with satiety and muscle maintenance.');
+  if (carbPct > 20) sugg.push('Carbs are above your target. Consider swapping refined carbs for whole grains or vegetables.');
+  if (fatPct > 20) sugg.push('Fat is above your target. Try reducing oil, butter, or creamy sauces.');
+  if (fiber < 8) sugg.push('Include leafy greens or legumes to boost fibre intake.');
+  if (sugg.length < 2) sugg.push('Overall a balanced meal. Keep up the good habits!');
 
   // Next meal ideas — diverse pool selected by dish name hash for variety
   function pickNextMeals(goal: string, dishName: string) {
@@ -1057,7 +1159,7 @@ function renderDailyProgress() {
   const log = getLog();
   const mealsLogged = log.length;
   const rows = [
-    { label: 'Daily Calories', val: totals.calories, goal: t.calories, unit: 'kcal', color: '#171717' },
+    { label: 'Daily Calories', val: totals.calories, goal: t.calories, unit: 'kcal', color: calColor() },
     { label: 'Daily Protein',  val: totals.protein,  goal: t.protein,  unit: 'g',    color: '#3b82f6' },
     { label: 'Carbs',    val: totals.carbs,    goal: t.carbs,    unit: 'g',    color: '#f59e0b' },
     { label: 'Fat',      val: totals.fat,      goal: t.fat,      unit: 'g',    color: '#ef4444' },
@@ -1102,7 +1204,7 @@ function renderDailyProgress() {
   if (totals.calories > 0 && t.calories > 0) {
     remainingSection.classList.remove('hidden');
     document.getElementById('remaining-grid')!.innerHTML = [
-      { label: 'Calories left', val: remaining.calories, unit: 'kcal', color: '#171717' },
+      { label: 'Calories left', val: remaining.calories, unit: 'kcal', color: calColor() },
       { label: 'Protein left',  val: remaining.protein,  unit: 'g',    color: '#3b82f6' },
       { label: 'Carbs left',    val: remaining.carbs,    unit: 'g',    color: '#f59e0b' },
       { label: 'Fat left',      val: remaining.fat,      unit: 'g',    color: '#ef4444' },
@@ -1171,7 +1273,7 @@ function renderTimeline() {
 
   // Day summary macros
   const summaryItems = [
-    { label: 'Calories', val: totals.calories, unit: 'kcal', color: '#171717' },
+    { label: 'Calories', val: totals.calories, unit: 'kcal', color: calColor() },
     { label: 'Protein',  val: totals.protein,  unit: 'g',    color: '#3b82f6' },
     { label: 'Carbs',    val: totals.carbs,    unit: 'g',    color: '#f59e0b' },
     { label: 'Fat',      val: totals.fat,      unit: 'g',    color: '#ef4444' },
@@ -1184,30 +1286,44 @@ function renderTimeline() {
   `).join('');
 }
 
-// Initial renders
-renderTimeline();
-renderDailyProgress();
+// Initial renders — wait for targets to load from server first
+(async () => {
+  await loadTargets();
+  renderTimeline();
+  renderDailyProgress();
+})();
 
-// ── Meal Analysis: Estimated / Per-Meal Target / % of Daily / Diff ─────────
+// ── Meal Analysis: Estimated / Target / Difference / Percentage ────────────
 function renderMealAnalysis(result: NutritionResult) {
   const target = PER_MEAL_TARGETS;
-  const daily = DAILY_TARGETS;
   const compEl = document.getElementById('per-meal-comparison')!;
   compEl.classList.remove('hidden');
+  const refLabel = document.getElementById('comparison-ref-label')!;
+  refLabel.textContent = HAS_PROFILE ? 'Compared with your personalized daily target' : 'Compared with standard daily nutrition recommendations';
 
-  const calDiff = result.calories - target.calories;
-  const proDiff = result.macros.protein - target.protein;
-  const calSign = calDiff >= 0 ? '+' : '';
-  const proSign = proDiff >= 0 ? '+' : '';
-  const calColor = calDiff > 10 ? '#ee0000' : calDiff < -10 ? '#f5a623' : '#10b981';
-  const proColor = proDiff < -5 ? '#f5a623' : proDiff > 10 ? '#10b981' : '#10b981';
-
-  const calDailyPct = Math.round((result.calories / (daily.calories || 2000)) * 100);
-  const proDailyPct = Math.round((result.macros.protein / (daily.protein || 100)) * 100);
+  function diffRow(label: string, actual: number, tgt: number, unit: string, color: string, isInverse = false) {
+    const diff = actual - tgt;
+    const sign = diff >= 0 ? '+' : '';
+    const pct = tgt > 0 ? Math.round(diff / tgt * 100) : 0;
+    const pctSign = diff >= 0 ? '+' : '';
+    const diffColor = isInverse
+      ? (diff > 0 ? '#ee0000' : diff < 0 ? '#10b981' : '#888888')
+      : (diff > 10 ? '#ee0000' : diff < -10 ? '#f5a623' : '#10b981');
+    return `
+      <div class="flex items-center justify-between py-1.5 border-b border-[#ebebeb]/50 last:border-b-0">
+        <span class="text-[12px] text-[#4d4d4d]">${label}</span>
+        <div class="text-right">
+          <span class="text-[13px] font-semibold" style="color:${color}">${actual}${unit}</span>
+          <span class="text-[11px] text-[#888888]"> / ${tgt}${unit}</span>
+          <br>
+          <span class="text-[11px] font-mono" style="color:${diffColor}">${sign}${diff} ${unit} (${pctSign}${pct}%)</span>
+        </div>
+      </div>`;
+  }
 
   document.getElementById('comparison-grid')!.innerHTML = `
     <div class="rounded-[8px] bg-[#fafafa] border border-[#ebebeb] p-4">
-      <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-2">This meal</p>
+      <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-2">Estimated</p>
       <div class="space-y-1.5">
         <div class="flex justify-between text-[13px]"><span class="text-[#4d4d4d]">Calories</span><span class="font-semibold text-[#171717]">${result.calories} kcal</span></div>
         <div class="flex justify-between text-[13px]"><span class="text-[#4d4d4d]">Protein</span><span class="font-semibold text-[#3b82f6]">${result.macros.protein}g</span></div>
@@ -1216,52 +1332,43 @@ function renderMealAnalysis(result: NutritionResult) {
       </div>
     </div>
     <div class="rounded-[8px] bg-[#fafafa] border border-[#ebebeb] p-4">
-      <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-2">Per Meal Target</p>
+      <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-2">Per-Meal Target</p>
       <div class="space-y-1.5">
-        <div class="flex justify-between text-[13px]"><span class="text-[#4d4d4d]">Calories / meal</span><span class="font-semibold text-[#171717]">${target.calories} kcal</span></div>
-        <div class="flex justify-between text-[13px]"><span class="text-[#4d4d4d]">Protein / meal</span><span class="font-semibold text-[#3b82f6]">${target.protein}g</span></div>
+        <div class="flex justify-between text-[13px]"><span class="text-[#4d4d4d]">Calories</span><span class="font-semibold text-[#171717]">${target.calories} kcal</span></div>
+        <div class="flex justify-between text-[13px]"><span class="text-[#4d4d4d]">Protein</span><span class="font-semibold text-[#3b82f6]">${target.protein}g</span></div>
+        <div class="flex justify-between text-[13px]"><span class="text-[#4d4d4d]">Carbs</span><span class="font-semibold text-[#f59e0b]">${target.carbs}g</span></div>
+        <div class="flex justify-between text-[13px]"><span class="text-[#4d4d4d]">Fat</span><span class="font-semibold text-[#ef4444]">${target.fat}g</span></div>
       </div>
     </div>
     <div class="rounded-[8px] bg-[#fafafa] border border-[#ebebeb] p-4">
-      <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-2">% of Daily</p>
-      <div class="space-y-1.5">
-        <div class="flex justify-between text-[13px]">
-          <span class="text-[#4d4d4d]">Calories</span>
-          <span class="font-semibold text-[#171717]">${calDailyPct}% <span class="text-[11px] text-[#888888] font-normal">(of ${daily.calories})</span></span>
-        </div>
-        <div class="mt-1 h-1.5 w-full rounded-full bg-[#ebebeb] overflow-hidden">
-          <div class="h-full rounded-full transition-all duration-700" style="width:${Math.min(calDailyPct, 100)}%;background:${calDailyPct > 100 ? '#ee0000' : calDailyPct > 75 ? '#f5a623' : '#10b981'}"></div>
-        </div>
-        <div class="flex justify-between text-[13px]">
-          <span class="text-[#4d4d4d]">Protein</span>
-          <span class="font-semibold text-[#3b82f6]">${proDailyPct}% <span class="text-[11px] text-[#888888] font-normal">(of ${daily.protein}g)</span></span>
-        </div>
-        <div class="mt-1 h-1.5 w-full rounded-full bg-[#ebebeb] overflow-hidden">
-          <div class="h-full rounded-full transition-all duration-700" style="width:${Math.min(proDailyPct, 100)}%;background:${proDailyPct >= 80 ? '#10b981' : proDailyPct >= 40 ? '#f5a623' : '#ee0000'}"></div>
-        </div>
-      </div>
-    </div>
-    <div class="rounded-[8px] bg-[#fafafa] border border-[#ebebeb] p-4">
-      <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-2">vs Per Meal</p>
-      <div class="space-y-1.5">
-        <div class="flex justify-between text-[13px]">
-          <span class="text-[#4d4d4d]">Calories</span>
-          <span class="font-semibold" style="color:${calColor}">${calSign}${calDiff} kcal ${calDiff > 0 ? '↑' : calDiff < 0 ? '↓' : '✓'}</span>
-        </div>
-        <div class="flex justify-between text-[13px]">
-          <span class="text-[#4d4d4d]">Protein</span>
-          <span class="font-semibold" style="color:${proColor}">${proSign}${proDiff}g ${proDiff > 0 ? '↑' : proDiff < 0 ? '↓' : '✓'}</span>
-        </div>
-      </div>
+      <p class="text-[10px] font-mono text-[#888888] uppercase tracking-wide mb-2">Difference</p>
+      ${diffRow('Calories', result.calories, target.calories, 'kcal', calColor())}
+      ${diffRow('Protein', result.macros.protein, target.protein, 'g', '#3b82f6')}
+      ${diffRow('Carbs', result.macros.carbs, target.carbs, 'g', '#f59e0b')}
+      ${diffRow('Fat', result.macros.fat, target.fat, 'g', '#ef4444')}
     </div>`;
 }
 
 // ── Analyse ────────────────────────────────────────────────────────────────
 analyseBtn.addEventListener('click', async () => {
   const dishName   = (document.getElementById('dish-name') as HTMLInputElement).value.trim();
-  const mealWeight = parseInt((document.getElementById('meal-weight') as HTMLInputElement).value) || 350;
+  const mealWeightInput = document.getElementById('meal-weight') as HTMLInputElement;
+  const rawWeight = mealWeightInput.value.trim();
+  if (!rawWeight) {
+    showError('Please enter an approximate weight before analysis.');
+    mealWeightInput.focus();
+    return;
+  }
+  const mealWeight = parseInt(rawWeight) || 0;
+  if (mealWeight <= 0) {
+    showError('Please enter a valid weight greater than zero.');
+    mealWeightInput.focus();
+    return;
+  }
   const age        = parseInt(quickAge.value) || parseInt(savedProfile.age) || 25;
-  const userWeight = parseInt(quickWeight.value) || parseInt(savedProfile.weight) || 70;
+  const qwRaw = parseFloat(quickWeight.value) || 0;
+  const qwProfile = loadProfile();
+  const userWeight = Math.round(qwProfile.weightUnit === 'lbs' && qwRaw > 0 ? qwRaw / 2.20462 : qwRaw) || parseInt(savedProfile.weight) || 70;
   const goal       = quickGoal.value || savedProfile.goal || 'maintain';
 
   // Create guest session if needed
@@ -1278,14 +1385,6 @@ analyseBtn.addEventListener('click', async () => {
         const data = await r.json();
         GUEST_TOKEN = data.token;
         localStorage.setItem('mct_guest_token', GUEST_TOKEN);
-        DAILY_TARGETS = { calories: data.dailyCalories, protein: data.dailyProtein, carbs: data.dailyCarbs, fat: data.dailyFat };
-        PER_MEAL_TARGETS = {
-          calories: Math.round(data.dailyCalories / mpd),
-          protein: Math.round(data.dailyProtein / mpd),
-          carbs: Math.round(data.dailyCarbs / mpd),
-          fat: Math.round(data.dailyFat / mpd),
-        };
-        MEALS_PER_DAY = mpd;
       }
     } catch {}
   }
@@ -1307,6 +1406,9 @@ analyseBtn.addEventListener('click', async () => {
     formData.append('age', age.toString());
     formData.append('userWeight', userWeight.toString());
     formData.append('goal', goal);
+    if (GUEST_TOKEN) {
+      formData.append('guestToken', GUEST_TOKEN);
+    }
     if (selectedFile) {
       formData.append('image', selectedFile);
     }
@@ -1317,6 +1419,12 @@ analyseBtn.addEventListener('click', async () => {
     });
     if (r.ok) {
       result = await r.json();
+      if (result.perMealTarget) {
+        HAS_PROFILE = result.hasProfile === true;
+        PER_MEAL_TARGETS = result.perMealTarget;
+        DAILY_TARGETS = result.dailyTarget;
+        MEALS_PER_DAY = result.mealsPerDay;
+      }
     }
   } catch {}
 
@@ -1364,19 +1472,46 @@ analyseBtn.addEventListener('click', async () => {
 
   // ── Meal header ──
   document.getElementById('result-meal-name')!.textContent = result.mealName;
-  document.getElementById('result-weight')!.textContent    = `~${result.weight}g serving`;
+  const weightLabel = mealWeightUnit === 'ml' ? 'ml' : 'g';
+  document.getElementById('result-weight')!.textContent    = `~${result.weight}${weightLabel} serving`;
   document.getElementById('result-calories')!.textContent  = result.calories.toString();
 
   // ── Meal Analysis: Estimated / Target / Difference ──
   renderMealAnalysis(result);
 
-  // ── Nutrition report table — Macros tab ──
+  // ── Update nutrition report labels for personalized targets ──
+  if (HAS_PROFILE) {
+    document.getElementById('nreport-ref-label')!.textContent = 'Compared with your personalized daily target';
+    document.getElementById('nreport-ref-col')!.textContent = 'Your target';
+  } else {
+    document.getElementById('nreport-ref-label')!.textContent = 'Compared with standard daily nutrition recommendations';
+    document.getElementById('nreport-ref-col')!.textContent = 'Daily ref.';
+  }
+
+  // ── Nutrition report table — Macros tab (use personal targets if profile exists) ──
+  const macroRef = HAS_PROFILE ? {
+    'Energy':   { ref: DAILY_TARGETS.calories, unit: 'kcal' },
+    'Protein':  { ref: DAILY_TARGETS.protein,  unit: 'g' },
+    'Carbs':    { ref: DAILY_TARGETS.carbs,    unit: 'g' },
+    'Fat':      { ref: DAILY_TARGETS.fat,      unit: 'g' },
+    'Fibre':    { ref: 25,                     unit: 'g' },
+    'Sugar':    { ref: 90,                     unit: 'g' },
+    'Sat. Fat': { ref: 20,                     unit: 'g' },
+  } : {
+    'Energy':   { ref: 2000, unit: 'kcal' },
+    'Protein':  { ref: 100,  unit: 'g' },
+    'Carbs':    { ref: 250,  unit: 'g' },
+    'Fat':      { ref: 65,   unit: 'g' },
+    'Fibre':    { ref: 25,   unit: 'g' },
+    'Sugar':    { ref: 90,   unit: 'g' },
+    'Sat. Fat': { ref: 20,   unit: 'g' },
+  };
   const macroRows = [
-    tableRow('Energy',   result.calories,        'kcal', 2000),
-    tableRow('Protein',  result.macros.protein,  'g',    50),
-    tableRow('Carbs',    result.macros.carbs,    'g',    260),
-    tableRow('Fat',      result.macros.fat,      'g',    70),
-    tableRow('Fibre',    result.macros.fiber,    'g',    25),
+    tableRow('Energy',   result.calories,        macroRef['Energy'].unit,   macroRef['Energy'].ref),
+    tableRow('Protein',  result.macros.protein,  macroRef['Protein'].unit,  macroRef['Protein'].ref),
+    tableRow('Carbs',    result.macros.carbs,    macroRef['Carbs'].unit,    macroRef['Carbs'].ref),
+    tableRow('Fat',      result.macros.fat,      macroRef['Fat'].unit,      macroRef['Fat'].ref),
+    tableRow('Fibre',    result.macros.fiber,    'g',                       25),
     tableRow('Sugar',    Math.round(result.macros.carbs * 0.3), 'g', 90, true),
     tableRow('Sat. Fat', Math.round(result.macros.fat * 0.4),   'g', 20, true),
   ].join('');
@@ -1396,56 +1531,23 @@ analyseBtn.addEventListener('click', async () => {
   // ── Next meal ideas ──
   let nextMeals = result.nextMeals;
   if (!nextMeals || nextMeals.length === 0) {
-    const diet = savedProfile.diet || 'none';
-    const isVeg = diet === 'vegetarian' || diet === 'vegan';
-    const mealCount = getLog().length;
-    const seed = result.mealName.split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0) + new Date().getDate() + mealCount;
-
-    const vegPool = [
+    const seed = result.mealName.split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0) + new Date().getDate();
+    const pool = goal === 'lose' ? [
+      { name: 'Grilled Salmon Salad', emoji: '🥗', cal: 320, reason: 'High protein, low carb' },
       { name: 'Lentil Soup',          emoji: '🍲', cal: 280, reason: 'Rich in fibre & iron' },
       { name: 'Greek Yogurt Bowl',    emoji: '🥣', cal: 210, reason: 'Probiotic + calcium boost' },
       { name: 'Zucchini Noodles',     emoji: '🥬', cal: 180, reason: 'Low-calorie, nutrient dense' },
+    ] : goal === 'gain' ? [
+      { name: 'Chicken & Rice Bowl',  emoji: '🍚', cal: 620, reason: 'High protein + complex carbs' },
+      { name: 'Peanut Butter Toast',  emoji: '🥜', cal: 420, reason: 'Healthy fats + energy' },
+      { name: 'Steak & Sweet Potato', emoji: '🥩', cal: 650, reason: 'Iron-rich muscle builder' },
+      { name: 'Protein Oatmeal Bowl', emoji: '🥣', cal: 450, reason: 'Slow-release energy' },
+    ] : [
       { name: 'Veggie Stir Fry',      emoji: '🥦', cal: 350, reason: 'Micronutrient dense' },
       { name: 'Quinoa Buddha Bowl',   emoji: '🫙', cal: 410, reason: 'Complete protein + fibre' },
-      { name: 'Protein Oatmeal Bowl', emoji: '🥣', cal: 450, reason: 'Slow-release energy' },
+      { name: 'Grilled Chicken Wrap', emoji: '🌯', cal: 380, reason: 'Balanced macros' },
       { name: 'Berry Smoothie Bowl',  emoji: '🥤', cal: 290, reason: 'Antioxidants + fibre' },
-      { name: 'Peanut Butter Toast',  emoji: '🥜', cal: 420, reason: 'Healthy fats + energy' },
-      { name: 'Chickpea Salad Wrap',  emoji: '🌯', cal: 340, reason: 'Plant protein + fibre' },
-      { name: 'Mushroom Omelette',    emoji: '🍳', cal: 280, reason: 'High protein, low carb' },
-      { name: 'Dal & Rice Bowl',      emoji: '🍛', cal: 380, reason: 'Complete plant protein' },
-      { name: 'Sweet Potato Curry',   emoji: '🍠', cal: 330, reason: 'Vitamin A + complex carbs' },
     ];
-
-    if (isVeg) {
-      var pool = vegPool;
-    } else if (goal === 'lose') {
-      var pool = [
-        { name: 'Grilled Salmon Salad', emoji: '🥗', cal: 320, reason: 'High protein, low carb' },
-        { name: 'Lentil Soup',          emoji: '🍲', cal: 280, reason: 'Rich in fibre & iron' },
-        { name: 'Greek Yogurt Bowl',    emoji: '🥣', cal: 210, reason: 'Probiotic + calcium boost' },
-        { name: 'Zucchini Noodles',     emoji: '🥬', cal: 180, reason: 'Low-calorie, nutrient dense' },
-        { name: 'Tofu Stir Fry',        emoji: '🥬', cal: 260, reason: 'Plant protein, low fat' },
-        { name: 'Egg White Omelette',   emoji: '🍳', cal: 200, reason: 'Pure protein, minimal fat' },
-      ];
-    } else if (goal === 'gain') {
-      var pool = [
-        { name: 'Chicken & Rice Bowl',  emoji: '🍚', cal: 620, reason: 'High protein + complex carbs' },
-        { name: 'Peanut Butter Toast',  emoji: '🥜', cal: 420, reason: 'Healthy fats + energy' },
-        { name: 'Steak & Sweet Potato', emoji: '🥩', cal: 650, reason: 'Iron-rich muscle builder' },
-        { name: 'Protein Oatmeal Bowl', emoji: '🥣', cal: 450, reason: 'Slow-release energy' },
-        { name: 'Tuna Pasta Bake',      emoji: '🍝', cal: 580, reason: 'Carbs + lean protein' },
-        { name: 'Whole Milk Smoothie',  emoji: '🥤', cal: 500, reason: 'Calorie-dense, easy digest' },
-      ];
-    } else {
-      var pool = [
-        { name: 'Veggie Stir Fry',      emoji: '🥦', cal: 350, reason: 'Micronutrient dense' },
-        { name: 'Quinoa Buddha Bowl',   emoji: '🫙', cal: 410, reason: 'Complete protein + fibre' },
-        { name: 'Grilled Chicken Wrap', emoji: '🌯', cal: 380, reason: 'Balanced macros' },
-        { name: 'Berry Smoothie Bowl',  emoji: '🥤', cal: 290, reason: 'Antioxidants + fibre' },
-        { name: 'Turkey Sandwich',      emoji: '🥪', cal: 400, reason: 'Lean protein + grains' },
-        { name: 'Mixed Grain Salad',    emoji: '🥗', cal: 330, reason: 'Diverse nutrients' },
-      ];
-    }
     const start = seed % pool.length;
     nextMeals = [...pool.slice(start), ...pool.slice(0, start)].slice(0, 3);
   }

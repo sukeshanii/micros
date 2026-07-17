@@ -1,5 +1,4 @@
 import type { APIRoute } from 'astro';
-import crypto from 'node:crypto';
 import { createGuestSession } from '../../lib/db';
 
 export const POST: APIRoute = async ({ request }) => {
@@ -12,7 +11,9 @@ export const POST: APIRoute = async ({ request }) => {
     const dailyCarbs = body.dailyCarbs || 250;
     const dailyFat = body.dailyFat || 65;
 
-    const token = crypto.randomBytes(24).toString('hex');
+    const array = new Uint8Array(24);
+    crypto.getRandomValues(array);
+    const token = Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
     await createGuestSession(token, { mealsPerDay, goal, dailyCalories, dailyProtein, dailyCarbs, dailyFat });
 
     return new Response(JSON.stringify({ ok: true, token, mealsPerDay, goal, dailyCalories, dailyProtein, dailyCarbs, dailyFat }), {

@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getSessionUserId } from '../../lib/auth';
-import { getProfile, upsertProfile, getPool } from '../../lib/db';
+import { getProfile, upsertProfile, getUserEmail } from '../../lib/db';
 import { calcDailyTargets } from '../../lib/nutrition';
 
 export const GET: APIRoute = async ({ cookies }) => {
@@ -12,9 +12,7 @@ export const GET: APIRoute = async ({ cookies }) => {
   }
 
   const profile = await getProfile(userId);
-  const db = await getPool();
-  const [userRows] = await db.execute('SELECT email FROM users WHERE id = ?', [userId]);
-  const email = userRows.length > 0 ? userRows[0].email : '';
+  const email = await getUserEmail(userId);
 
   return new Response(JSON.stringify({
     email,

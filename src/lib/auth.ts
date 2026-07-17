@@ -1,20 +1,17 @@
-import crypto from 'node:crypto';
-import type { AstroCookies } from 'astro';
-import { createSession as dbCreateSession, deleteSession, getSessionUserId as dbGetSessionUserId, findUserByEmail as dbFindUserByEmail, createUser as dbCreateUser } from './db';
-
-const SESSION_COOKIE = 'micro_session';
-const SESSION_MAX_AGE = 365 * 24 * 60 * 60;
+import * as db from './db';
 
 function generateToken(): string {
-  return crypto.randomBytes(32).toString('hex');
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
 }
 
-export async function createSession(userId: number, cookies: AstroCookies): Promise<string> {
+export async function createSession(userId: number, cookies: any): Promise<string> {
   const token = generateToken();
-  await dbCreateSession(token, userId);
-  cookies.set(SESSION_COOKIE, token, {
+  await db.createSession(token, userId);
+  cookies.set('micro_session', token, {
     path: '/',
-    maxAge: SESSION_MAX_AGE,
+    maxAge: 365 * 24 * 60 * 60,
     httpOnly: true,
     secure: true,
     sameSite: 'lax',
@@ -22,28 +19,28 @@ export async function createSession(userId: number, cookies: AstroCookies): Prom
   return token;
 }
 
-export async function destroySession(cookies: AstroCookies) {
-  const token = cookies.get(SESSION_COOKIE)?.value;
+export async function destroySession(cookies: any) {
+  const token = cookies.get('micro_session')?.value;
   if (token) {
-    await deleteSession(token);
+    await db.deleteSession(token);
   }
-  cookies.delete(SESSION_COOKIE, { path: '/' });
+  cookies.delete('micro_session', { path: '/' });
 }
 
-export async function getSessionUserId(cookies: AstroCookies): Promise<number | null> {
-  const token = cookies.get(SESSION_COOKIE)?.value;
+export async function getSessionUserId(cookies: any): Promise<number | null> {
+  const token = cookies.get('micro_session')?.value;
   if (!token) return null;
   try {
-    return await dbGetSessionUserId(token);
+    return await db.getSessionUserId(token);
   } catch {
     return null;
   }
 }
 
 export async function findUserByEmail(email: string): Promise<{ id: number; email: string } | null> {
-  return dbFindUserByEmail(email);
+  return db.findUserByEmail(email);
 }
 
 export async function createUser(email: string): Promise<{ id: number; email: string }> {
-  return dbCreateUser(email);
+  return db.createUser(email);
 }

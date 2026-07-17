@@ -11,7 +11,7 @@ const {
   title = 'Micro & Calorie Tracker — Best Free AI Calorie & Protein Tracker Online',
   description = 'Track calories, protein, carbs, fats and micronutrients instantly with the best free AI calorie tracker. Upload a meal photo for accurate nutrition breakdown — the most accurate calorie and protein tracker online.',
   image = '/favicon-96x96.png',
-  canonical = 'https://microcalorietracker.com',
+  canonical = 'https://microcalorietracker.online',
 } = Astro.props;
 ---
 
@@ -48,6 +48,13 @@ const {
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
       rel="stylesheet"
     />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z2WGLYYM60"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z2WGLYYM60');
+    </script>
   </head>
   <body class="bg-[#fafafa] text-[#171717] antialiased dark:bg-[#0a0a0a] dark:text-white transition-colors" style="font-family: Inter, system-ui, sans-serif;">
     <slot />

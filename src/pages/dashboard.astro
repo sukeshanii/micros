@@ -217,9 +217,9 @@ import Navbar from '../components/Navbar.astro';
       <div class="px-6 py-4 border-b border-[#ebebeb] flex items-center justify-between flex-wrap gap-2">
         <div>
           <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide">Daily nutrition report</p>
-          <p class="text-[13px] text-[#4d4d4d] mt-0.5">Your intake vs. recommended daily reference values</p>
+          <p id="daily-report-subtitle" class="text-[13px] text-[#4d4d4d] mt-0.5">Your intake vs. recommended daily reference values</p>
         </div>
-        <span class="text-[11px] font-mono text-[#888888] bg-[#fafafa] border border-[#ebebeb] px-2 py-1 rounded-full">Based on WHO / EU NRV</span>
+        <span id="daily-report-badge" class="text-[11px] font-mono text-[#888888] bg-[#fafafa] border border-[#ebebeb] px-2 py-1 rounded-full">Based on WHO / EU NRV</span>
       </div>
       <div class="flex border-b border-[#ebebeb]">
         <button id="dtab-macros" onclick="switchDTab('macros')"
@@ -232,7 +232,7 @@ import Navbar from '../components/Navbar.astro';
           <div class="grid grid-cols-5 px-6 py-2 bg-[#fafafa] border-b border-[#ebebeb]">
             <span class="col-span-2 text-[11px] font-mono text-[#888888] uppercase tracking-wide">Nutrient</span>
             <span class="text-[11px] font-mono text-[#888888] uppercase tracking-wide text-right">Consumed</span>
-            <span class="text-[11px] font-mono text-[#888888] uppercase tracking-wide text-right">Daily ref.</span>
+            <span id="dash-ref-col" class="text-[11px] font-mono text-[#888888] uppercase tracking-wide text-right">Daily ref.</span>
             <span class="text-[11px] font-mono text-[#888888] uppercase tracking-wide text-right">Status</span>
           </div>
           <div id="daily-table-macros" class="divide-y divide-[#ebebeb]"><!-- JS --></div>
@@ -332,7 +332,7 @@ async function loadDashboard() {
     return;
   }
 
-  const { targets, consumed, remaining, progress, meals, date, mealsPerDay } = dailyData;
+  const { targets, consumed, remaining, progress, meals, date, mealsPerDay, hasProfile } = dailyData;
 
   // ── Summary cards ──
   const calPct = progress.calories;
@@ -431,12 +431,21 @@ async function loadDashboard() {
       </div>`).join('');
   }
 
-  // ── Daily nutrition report — Macros ──
+  // ── Daily nutrition report — Macros (use personalized targets) ──
+  if (hasProfile) {
+    document.getElementById('daily-report-badge')!.textContent = 'Compared with your personalized daily target';
+    document.getElementById('daily-report-subtitle')!.textContent = 'Your intake vs. your personalized daily targets';
+    document.getElementById('dash-ref-col')!.textContent = 'Your target';
+  } else {
+    document.getElementById('daily-report-badge')!.textContent = 'Compared with standard daily nutrition recommendations';
+    document.getElementById('daily-report-subtitle')!.textContent = 'Your intake vs. recommended daily reference values';
+    document.getElementById('dash-ref-col')!.textContent = 'Daily ref.';
+  }
   document.getElementById('daily-table-macros')!.innerHTML = [
     tableRow('Energy',   consumed.calories,             'kcal', targets.calories),
-    tableRow('Protein',  consumed.protein,              'g',    50),
-    tableRow('Carbs',    consumed.carbs,                'g',    260),
-    tableRow('Fat',      consumed.fat,                  'g',    70),
+    tableRow('Protein',  consumed.protein,              'g',    targets.protein),
+    tableRow('Carbs',    consumed.carbs,                'g',    targets.carbs),
+    tableRow('Fat',      consumed.fat,                  'g',    targets.fat),
     tableRow('Fibre',    consumed.fiber,                'g',    25),
     tableRow('Sugar',    Math.round(consumed.carbs * 0.3), 'g', 90, true),
     tableRow('Sat. Fat', Math.round(consumed.fat * 0.4),   'g', 20, true),

@@ -47,9 +47,21 @@ import Navbar from '../components/Navbar.astro';
             </select>
           </div>
           <div>
-            <label class="block text-[13px] font-medium text-[#171717] mb-1.5">Height (cm)</label>
-            <input type="number" id="p-height" placeholder="170" min="100" max="250"
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-[13px] font-medium text-[#171717]">Height</label>
+              <div class="flex rounded-[6px] border border-[#ebebeb] overflow-hidden text-[12px] font-medium">
+                <button type="button" id="h-unit-cm" class="px-2.5 py-1 bg-[#171717] text-white transition-colors">cm</button>
+                <button type="button" id="h-unit-ftin" class="px-2.5 py-1 text-[#888888] hover:text-[#171717] transition-colors">ft/in</button>
+              </div>
+            </div>
+            <input type="number" id="p-height" placeholder="170" min="0" max="250"
               class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] placeholder:text-[#888888] focus:outline-none focus:border-[#a1a1a1] transition-colors" />
+            <div id="height-ftin" class="hidden grid grid-cols-2 gap-2">
+              <input type="number" id="p-height-ft" placeholder="5" min="0" max="8"
+                class="h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] placeholder:text-[#888888] focus:outline-none focus:border-[#a1a1a1] transition-colors" />
+              <input type="number" id="p-height-in" placeholder="10" min="0" max="11" step="0.1"
+                class="h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] placeholder:text-[#888888] focus:outline-none focus:border-[#a1a1a1] transition-colors" />
+            </div>
           </div>
         </div>
       </div>
@@ -59,17 +71,23 @@ import Navbar from '../components/Navbar.astro';
         <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide mb-5">Body metrics</p>
         <div class="grid sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-[13px] font-medium text-[#171717] mb-1.5">Current weight (kg)</label>
-            <input type="number" id="p-weight" placeholder="70" min="20" max="300" step="0.1"
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-[13px] font-medium text-[#171717]">Current weight</label>
+              <div class="flex rounded-[6px] border border-[#ebebeb] overflow-hidden text-[12px] font-medium">
+                <button type="button" id="w-unit-kg" class="px-2.5 py-1 bg-[#171717] text-white transition-colors">kg</button>
+                <button type="button" id="w-unit-lbs" class="px-2.5 py-1 text-[#888888] hover:text-[#171717] transition-colors">lbs</button>
+              </div>
+            </div>
+            <input type="number" id="p-weight" placeholder="70" min="0" max="700" step="0.1"
               class="w-full h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] placeholder:text-[#888888] focus:outline-none focus:border-[#a1a1a1] transition-colors" />
           </div>
           <div>
             <label class="block text-[13px] font-medium text-[#171717] mb-1.5">
-              Goal weight (kg)
+              Goal weight
               <span class="ml-1 px-1.5 py-0.5 rounded-full bg-[#d3e5ff] text-[#0070f3] text-[10px] font-mono">New</span>
             </label>
             <div class="flex gap-2">
-              <input type="number" id="p-target-weight" placeholder="65" min="20" max="300" step="0.1"
+              <input type="number" id="p-target-weight" placeholder="65" min="0" max="700" step="0.1"
                 class="flex-1 h-10 px-3 rounded-[6px] border border-[#ebebeb] bg-white text-[14px] text-[#171717] placeholder:text-[#888888] focus:outline-none focus:border-[#a1a1a1] transition-colors" />
               <button type="button" id="set-goal-btn"
                 class="px-3 h-10 rounded-[6px] bg-[#171717] text-white text-[13px] font-medium hover:bg-[#333] transition-colors whitespace-nowrap">
@@ -88,9 +106,9 @@ import Navbar from '../components/Navbar.astro';
             <div id="gp-bar" class="h-full rounded-full bg-[#0070f3] transition-all duration-700" style="width:0%"></div>
           </div>
           <div class="flex justify-between text-[12px] text-[#888888]">
-            <span id="gp-start">Start: — kg</span>
-            <span id="gp-remaining">— kg remaining</span>
-            <span id="gp-target-label">Goal: — kg</span>
+            <span id="gp-start">Start: —</span>
+            <span id="gp-remaining">— remaining</span>
+            <span id="gp-target-label">Goal: —</span>
           </div>
           <p id="gp-eta" class="text-[11px] font-mono text-[#888888] mt-2"></p>
         </div>
@@ -203,15 +221,15 @@ import Navbar from '../components/Navbar.astro';
 
     <!-- Success notification -->
     <div id="success-notification" class="hidden mt-8 rounded-[12px] bg-[#f0fdf4] border border-[#bbf7d0] p-6 text-center">
-      <div class="w-12 h-12 rounded-full bg-[#10b981] flex items-center justify-center mx-auto mb-4">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M5 10l3 3 7-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <div class="w-14 h-14 rounded-full bg-[#10b981] flex items-center justify-center mx-auto mb-4">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12l4 4 10-10" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <p class="text-[18px] font-semibold text-[#171717] mb-1">Profile saved successfully.</p>
+      <p class="text-[18px] font-semibold text-[#171717] mb-1">Profile saved successfully</p>
       <p class="text-[14px] text-[#4d4d4d] mb-6">Your nutrition targets are now personalised.</p>
       <a href="/#scanner" class="inline-flex items-center px-6 h-11 rounded-full bg-[#171717] text-white text-[15px] font-medium hover:bg-[#333] transition-colors gap-2">
-        Continue to Scan Your Meal
+        Continue to Scan
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path d="M6 4l4 4-4 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -230,7 +248,7 @@ import Navbar from '../components/Navbar.astro';
       <p class="text-[14px] text-[#4d4d4d] mb-6">We have all the information needed to personalise your nutrition targets.</p>
       <div class="flex items-center justify-center gap-3">
         <a href="/#scanner" class="inline-flex items-center px-6 h-11 rounded-full bg-[#171717] text-white text-[15px] font-medium hover:bg-[#333] transition-colors gap-2">
-          Scan Your Meal
+          Continue to Scan
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M6 4l4 4-4 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="right"/>
           </svg>
@@ -248,6 +266,7 @@ interface ProfileData {
   name: string; age: string; sex: string; height: string; weight: string;
   targetWeight: string; goal: string; activity: string; diet: string;
   allergies: string; startWeight: string; mealsPerDay: string;
+  heightUnit?: string; weightUnit?: string;
 }
 
 function loadProfile(): ProfileData {
@@ -280,11 +299,38 @@ function calcTDEE(w: number, h: number, age: number, sex: string, activity: stri
   return Math.round(bmr * (m[activity] || 1.55));
 }
 
+// Unit conversion helpers
+function getHeightCm(): number {
+  const p = loadProfile();
+  const unit = p.heightUnit || 'cm';
+  if (unit === 'ftin') {
+    const ft = parseFloat((document.getElementById('p-height-ft') as HTMLInputElement).value) || 0;
+    const inc = parseFloat((document.getElementById('p-height-in') as HTMLInputElement).value) || 0;
+    return Math.round(ft * 30.48 + inc * 2.54);
+  }
+  return parseFloat((document.getElementById('p-height') as HTMLInputElement).value) || 0;
+}
+function getWeightKg(inputId: string = 'p-weight'): number {
+  const p = loadProfile();
+  const unit = p.weightUnit || 'kg';
+  const val = parseFloat((document.getElementById(inputId) as HTMLInputElement).value) || 0;
+  if (unit === 'lbs') return +(val / 2.20462).toFixed(1);
+  return val;
+}
+function getWeightDisplayKg(valKg: number, unit: string): string {
+  if (unit === 'lbs') return (valKg * 2.20462).toFixed(1);
+  return valKg.toFixed(1);
+}
+const W_UNIT_LABEL: Record<string, string> = { kg: 'kg', lbs: 'lbs' };
+
 const emailInput     = document.getElementById('p-email') as HTMLInputElement;
 const emailStatus    = document.getElementById('email-status')!;
 const saveMsg        = document.getElementById('save-msg')!;
 const weightInput    = document.getElementById('p-weight') as HTMLInputElement;
 const heightInput    = document.getElementById('p-height') as HTMLInputElement;
+const heightFtInput  = document.getElementById('p-height-ft') as HTMLInputElement;
+const heightInInput  = document.getElementById('p-height-in') as HTMLInputElement;
+const heightFtinDiv  = document.getElementById('height-ftin')!;
 const ageInput       = document.getElementById('p-age') as HTMLInputElement;
 const sexSelect      = document.getElementById('p-sex') as HTMLSelectElement;
 const activitySel    = document.getElementById('p-activity') as HTMLSelectElement;
@@ -295,19 +341,28 @@ const dietSel        = document.getElementById('p-diet') as HTMLSelectElement;
 const allergiesInput = document.getElementById('p-allergies') as HTMLInputElement;
 const mealsDaySel    = document.getElementById('p-meals-day') as HTMLSelectElement;
 const profileForm    = document.getElementById('profile-form') as HTMLFormElement;
+const hUnitCm        = document.getElementById('h-unit-cm') as HTMLButtonElement;
+const hUnitFtin      = document.getElementById('h-unit-ftin') as HTMLButtonElement;
+const wUnitKg        = document.getElementById('w-unit-kg') as HTMLButtonElement;
+const wUnitLbs       = document.getElementById('w-unit-lbs') as HTMLButtonElement;
 
 function getFormData(): ProfileData {
+  const p = loadProfile();
+  const heightUnit = p.heightUnit || 'cm';
+  const weightUnit = p.weightUnit || 'kg';
   return {
     name: nameInput.value, age: ageInput.value, sex: sexSelect.value,
-    height: heightInput.value, weight: weightInput.value,
-    targetWeight: targetWtIn.value, goal: goalSel.value, activity: activitySel.value,
+    height: String(getHeightCm()), weight: String(getWeightKg()),
+    targetWeight: String(getWeightKg('p-target-weight')),
+    goal: goalSel.value, activity: activitySel.value,
     diet: dietSel.value, allergies: allergiesInput.value, startWeight: '',
     mealsPerDay: mealsDaySel.value,
+    heightUnit, weightUnit,
   };
 }
 function getStartWeight(): string {
   const s = loadProfile();
-  return s.startWeight || weightInput.value || '';
+  return s.startWeight || String(getWeightKg()) || '';
 }
 
 let autoSaveTimer: number | undefined;
@@ -322,8 +377,10 @@ function autoSave() {
 }
 
 function updateGoalProgress() {
-  const w = parseFloat(weightInput.value);
-  const t = parseFloat(targetWtIn.value);
+  const p = loadProfile();
+  const wUnit = p.weightUnit || 'kg';
+  const w = getWeightKg();
+  const t = getWeightKg('p-target-weight');
   if (!w || !t) return;
   const preview = document.getElementById('goal-progress-preview')!;
   preview.classList.remove('hidden');
@@ -336,20 +393,20 @@ function updateGoalProgress() {
   const weeks = Math.ceil(parseFloat(remaining) / 0.5);
   (document.getElementById('gp-bar') as HTMLElement).style.width = pct + '%';
   document.getElementById('gp-pct-label')!.textContent = pct + '%';
-  document.getElementById('gp-start')!.textContent = `Start: ${start} kg`;
-  document.getElementById('gp-remaining')!.textContent = `${remaining} kg remaining`;
-  document.getElementById('gp-target-label')!.textContent = `Goal: ${t} kg`;
+  document.getElementById('gp-start')!.textContent = `Start: ${getWeightDisplayKg(start, wUnit)} ${W_UNIT_LABEL[wUnit]}`;
+  document.getElementById('gp-remaining')!.textContent = `${getWeightDisplayKg(parseFloat(remaining), wUnit)} ${W_UNIT_LABEL[wUnit]} remaining`;
+  document.getElementById('gp-target-label')!.textContent = `Goal: ${getWeightDisplayKg(t, wUnit)} ${W_UNIT_LABEL[wUnit]}`;
   document.getElementById('gp-eta')!.textContent = `Est. ${weeks} week${weeks !== 1 ? 's' : ''} at 0.5 kg/week`;
 }
 
 document.getElementById('set-goal-btn')!.addEventListener('click', () => {
   updateGoalProgress();
-  const w = parseFloat(weightInput.value);
-  const t = parseFloat(targetWtIn.value);
+  const w = getWeightKg();
+  const t = getWeightKg('p-target-weight');
   if (w && t) {
     const p = loadProfile();
-    if (!p.startWeight) p.startWeight = w.toString();
-    p.targetWeight = t.toString(); p.weight = w.toString();
+    if (!p.startWeight) p.startWeight = String(w);
+    p.targetWeight = String(t); p.weight = String(w);
     saveProfileLocal(p); syncProfileToServer(p);
     const btn = document.getElementById('set-goal-btn')!;
     btn.textContent = '✓ Saved';
@@ -358,8 +415,8 @@ document.getElementById('set-goal-btn')!.addEventListener('click', () => {
 });
 
 function updateCalcs() {
-  const w = parseFloat(weightInput.value);
-  const h = parseFloat(heightInput.value);
+  const w = getWeightKg();
+  const h = getHeightCm();
   const a = parseInt(ageInput.value);
   const sex = sexSelect.value;
   const activity = activitySel.value;
@@ -425,6 +482,56 @@ function updateCalcs() {
   updateGoalProgress();
 }
 
+// ── Unit toggle logic ────────────────────────────────────────────────────
+function setHeightUnit(unit: 'cm' | 'ftin') {
+  const p = loadProfile();
+  const currentCm = getHeightCm();
+  if (unit === 'ftin') {
+    heightInput.classList.add('hidden');
+    heightFtinDiv.classList.remove('hidden');
+    const totalIn = Math.round(currentCm / 2.54);
+    const ft = Math.floor(totalIn / 12);
+    const inc = totalIn % 12;
+    heightFtInput.value = String(ft);
+    heightInInput.value = String(inc);
+    hUnitCm.className = 'px-2.5 py-1 text-[#888888] hover:text-[#171717] transition-colors';
+    hUnitFtin.className = 'px-2.5 py-1 bg-[#171717] text-white transition-colors';
+  } else {
+    heightInput.classList.remove('hidden');
+    heightFtinDiv.classList.add('hidden');
+    heightInput.value = String(currentCm);
+    hUnitCm.className = 'px-2.5 py-1 bg-[#171717] text-white transition-colors';
+    hUnitFtin.className = 'px-2.5 py-1 text-[#888888] hover:text-[#171717] transition-colors';
+  }
+  p.heightUnit = unit;
+  saveProfileLocal(p);
+  updateCalcs();
+}
+
+function setWeightUnit(unit: 'kg' | 'lbs') {
+  const p = loadProfile();
+  const currentKg = getWeightKg();
+  if (unit === 'lbs') {
+    weightInput.placeholder = '154';
+    weightInput.value = (currentKg * 2.20462).toFixed(1);
+    wUnitKg.className = 'px-2.5 py-1 text-[#888888] hover:text-[#171717] transition-colors';
+    wUnitLbs.className = 'px-2.5 py-1 bg-[#171717] text-white transition-colors';
+  } else {
+    weightInput.placeholder = '70';
+    weightInput.value = currentKg > 0 ? currentKg.toFixed(1) : '';
+    wUnitKg.className = 'px-2.5 py-1 bg-[#171717] text-white transition-colors';
+    wUnitLbs.className = 'px-2.5 py-1 text-[#888888] hover:text-[#171717] transition-colors';
+  }
+  p.weightUnit = unit;
+  saveProfileLocal(p);
+  updateCalcs();
+}
+
+hUnitCm.addEventListener('click', () => setHeightUnit('cm'));
+hUnitFtin.addEventListener('click', () => setHeightUnit('ftin'));
+wUnitKg.addEventListener('click', () => setWeightUnit('kg'));
+wUnitLbs.addEventListener('click', () => setWeightUnit('lbs'));
+
 const successNotification = document.getElementById('success-notification')!;
 const profileCompleteState = document.getElementById('profile-complete-state')!;
 const profileFormEl = document.getElementById('profile-form')!;
@@ -469,10 +576,7 @@ profileForm.addEventListener('submit', async (e) => {
   if (synced) {
     showSuccessNotification();
   } else {
-    saveMsg.textContent = '✓ Saved locally';
-    saveMsg.className = 'text-[13px] font-mono text-[#10b981]';
-    saveMsg.classList.remove('hidden');
-    setTimeout(() => saveMsg.classList.add('hidden'), 3000);
+    showSuccessNotification();
   }
 });
 
@@ -495,6 +599,10 @@ async function init() {
   if (local.allergies) allergiesInput.value = local.allergies;
   if (local.mealsPerDay) mealsDaySel.value = local.mealsPerDay;
 
+  // Restore unit preferences
+  if (local.heightUnit === 'ftin') setHeightUnit('ftin');
+  if (local.weightUnit === 'lbs') setWeightUnit('lbs');
+
   const serverData = await fetchProfile();
   if (serverData?.profile) {
     const p = serverData.profile;
@@ -510,7 +618,12 @@ async function init() {
     if (p.allergies) allergiesInput.value = p.allergies;
     if (p.mealsPerDay) mealsDaySel.value = p.mealsPerDay;
     if (p.startWeight) { const s = loadProfile(); s.startWeight = p.startWeight; saveProfileLocal(s); }
-    saveProfileLocal(p);
+    saveProfileLocal({ ...loadProfile(), ...p });
+
+    // Re-apply unit display after server data
+    const updated = loadProfile();
+    if (updated.heightUnit === 'ftin') setHeightUnit('ftin');
+    if (updated.weightUnit === 'lbs') setWeightUnit('lbs');
 
     // If profile is complete, show the complete state instead of the form
     if (isProfileComplete(p)) {
@@ -526,7 +639,7 @@ async function init() {
     emailStatus.classList.remove('hidden');
   }
 
-  const allFields = [nameInput, ageInput, sexSelect, heightInput, weightInput, targetWtIn, goalSel, activitySel, dietSel, allergiesInput, emailInput, mealsDaySel];
+  const allFields = [nameInput, ageInput, sexSelect, heightInput, heightFtInput, heightInInput, weightInput, targetWtIn, goalSel, activitySel, dietSel, allergiesInput, emailInput, mealsDaySel];
   allFields.forEach(el => {
     el.addEventListener('input', () => { autoSave(); updateCalcs(); });
     el.addEventListener('change', () => { autoSave(); updateCalcs(); });
