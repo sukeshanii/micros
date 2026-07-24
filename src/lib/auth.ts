@@ -13,7 +13,7 @@ export async function createSession(userId: number, cookies: any): Promise<strin
     path: '/',
     maxAge: 365 * 24 * 60 * 60,
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
   });
   return token;

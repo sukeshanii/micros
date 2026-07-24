@@ -236,6 +236,21 @@ import Navbar from '../components/Navbar.astro';
       </a>
     </div>
 
+    <!-- Error notification -->
+    <div id="error-notification" class="hidden mt-8 rounded-[12px] bg-[#fef2f2] border border-[#fecaca] p-6 text-center">
+      <div class="w-14 h-14 rounded-full bg-[#ee0000] flex items-center justify-center mx-auto mb-4">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 8v4m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p class="text-[18px] font-semibold text-[#171717] mb-1">Unable to save profile</p>
+      <p class="text-[14px] text-[#4d4d4d] mb-2">Please log in again and try saving your profile.</p>
+      <p id="error-detail" class="text-[12px] font-mono text-[#888888] mb-4"></p>
+      <button id="dismiss-error-btn" class="px-5 h-11 rounded-full bg-[#171717] text-white text-[14px] font-medium hover:bg-[#333] transition-colors">
+        Dismiss
+      </button>
+    </div>
+
     <!-- Profile complete state (shown for returning users) -->
     <div id="profile-complete-state" class="hidden mt-8 rounded-[12px] bg-white border border-[#ebebeb] p-8 text-center shadow-card">
       <div class="w-14 h-14 rounded-full bg-[#f0fdf4] border border-[#bbf7d0] flex items-center justify-center mx-auto mb-4">
@@ -277,13 +292,23 @@ function saveProfileLocal(data: ProfileData) {
 }
 
 async function fetchProfile(): Promise<{ email: string; profile: ProfileData | null } | null> {
-  try { const r = await fetch('/api/profile'); return r.ok ? r.json() : null; } catch { return null; }
+  try { const r = await fetch('/api/profile', { credentials: 'include' }); return r.ok ? r.json() : null; } catch { return null; }
 }
 async function syncProfileToServer(data: ProfileData): Promise<boolean> {
-  try { const r = await fetch('/api/profile', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); return r.ok; } catch { return false; }
+  try {
+    const r = await fetch('/api/profile', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data), credentials: 'include' });
+    if (!r.ok) {
+      const body = await r.text();
+      console.log('[syncProfileToServer] FAILED: HTTP', r.status, 'body:', body);
+    }
+    return r.ok;
+  } catch (e) {
+    console.log('[syncProfileToServer] ERROR:', e);
+    return false;
+  }
 }
 async function registerEmail(email: string): Promise<boolean> {
-  try { const r = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) }); return r.ok; } catch { return false; }
+  try { const r = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }), credentials: 'include' }); return r.ok; } catch { return false; }
 }
 
 function calcBMI(w: number, h: number) { return w / ((h / 100) ** 2); }
@@ -533,6 +558,9 @@ wUnitKg.addEventListener('click', () => setWeightUnit('kg'));
 wUnitLbs.addEventListener('click', () => setWeightUnit('lbs'));
 
 const successNotification = document.getElementById('success-notification')!;
+const errorNotification = document.getElementById('error-notification')!;
+const errorDetail = document.getElementById('error-detail')!;
+const dismissErrorBtn = document.getElementById('dismiss-error-btn')!;
 const profileCompleteState = document.getElementById('profile-complete-state')!;
 const profileFormEl = document.getElementById('profile-form')!;
 const editProfileBtn = document.getElementById('edit-profile-btn') as HTMLButtonElement;
@@ -576,13 +604,18 @@ profileForm.addEventListener('submit', async (e) => {
   if (synced) {
     showSuccessNotification();
   } else {
-    showSuccessNotification();
+    errorNotification.classList.remove('hidden');
+    errorNotification.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 });
 
 editProfileBtn?.addEventListener('click', () => {
   profileCompleteState.classList.add('hidden');
   profileFormEl.classList.remove('hidden');
+});
+
+dismissErrorBtn?.addEventListener('click', () => {
+  errorNotification.classList.add('hidden');
 });
 
 async function init() {
