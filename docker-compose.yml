@@ -1,0 +1,55 @@
+services:
+  app:
+    build: ./astronautical-altitude
+    ports:
+      - "127.0.0.1:4321:4321"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=micros
+      - DB_PASSWORD=${DB_PASSWORD:-micros_secret}
+      - DB_NAME=micros
+      - MEMCACHED_HOST=memcached
+      - MEMCACHED_PORT=11211
+      - HOST=0.0.0.0
+    volumes:
+      - app_data:/app/data
+    depends_on:
+      mysql:
+        condition: service_healthy
+      memcached:
+        condition: service_started
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root_secret}
+      - MYSQL_DATABASE=micros
+      - MYSQL_USER=micros
+      - MYSQL_PASSWORD=${DB_PASSWORD:-micros_secret}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./migrate.sql:/docker-entrypoint-initdb.d/02-migrate.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
+    restart: unless-stopped
+
+  memcached:
+    image: memcached:alpine
+    ports:
+      - "127.0.0.1:11211:11211"
+    restart: unless-stopped
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 60 --cleanup
+
+volumes:
+  mysql_data:
+  app_data:

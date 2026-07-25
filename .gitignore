@@ -25,3 +25,18 @@ pnpm-debug.log*
 
 # wrangler generated files
 .wrangler/
+
+# Terraform
+Terraform/.terraform/
+Terraform/*.tfstate
+Terraform/*.tfstate.*
+Terraform/micros-key
+Terraform/micros-key.pub
+# Terraform state
+*.tfstate
+*.tfstate.*
+
+# Local files
+console.json
+console_output.txt
+cookies*.txt
