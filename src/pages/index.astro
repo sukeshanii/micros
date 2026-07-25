@@ -262,16 +262,16 @@ import Navbar from '../components/Navbar.astro';
 
           <!-- Full Nutrition Report Table (blood-report style) -->
           <div class="rounded-[12px] bg-white border border-[#ebebeb] overflow-hidden shadow-card">
-            <div class="px-5 py-4 border-b border-[#ebebeb] flex items-center justify-between">
-              <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide">Nutrition report</p>
-              <span id="nreport-ref-label" class="text-[11px] font-mono text-[#888888]">Compared with standard daily nutrition recommendations</span>
+            <div class="px-5 py-4 border-b border-[#ebebeb] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+              <p class="text-[12px] font-mono text-[#888888] uppercase tracking-wide shrink-0">Nutrition report</p>
+              <span id="nreport-ref-label" class="text-[11px] font-mono text-[#888888] sm:text-right">Compared with standard daily nutrition recommendations</span>
             </div>
             <!-- Tab switcher -->
             <div class="flex border-b border-[#ebebeb]">
               <button id="tab-macros" onclick="switchTab('macros')"
-                class="flex-1 py-2.5 text-[12px] font-medium text-[#171717] border-b-2 border-[#171717] transition-colors">Macros</button>
+                class="flex-1 py-2.5 text-[11px] sm:text-[12px] font-medium text-[#171717] border-b-2 border-[#171717] transition-colors">Macros</button>
               <button id="tab-micros" onclick="switchTab('micros')"
-                class="flex-1 py-2.5 text-[12px] font-medium text-[#888888] border-b-2 border-transparent hover:text-[#171717] transition-colors">Vitamins & Minerals</button>
+                class="flex-1 py-2.5 text-[11px] sm:text-[12px] font-medium text-[#888888] border-b-2 border-transparent hover:text-[#171717] transition-colors">Vitamins &amp; Minerals</button>
             </div>
             <div class="overflow-x-auto">
               <div class="min-w-[500px]">

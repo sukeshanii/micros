@@ -8,7 +8,10 @@ function generateToken(): string {
 
 export async function createSession(userId: number, cookies: any): Promise<string> {
   const token = generateToken();
-  await db.createSession(token, userId);
+  const ok = await db.createSession(token, userId);
+  if (!ok) {
+    throw new Error('Failed to create session in database');
+  }
   cookies.set('micro_session', token, {
     path: '/',
     maxAge: 365 * 24 * 60 * 60,
@@ -31,8 +34,13 @@ export async function getSessionUserId(cookies: any): Promise<number | null> {
   const token = cookies.get('micro_session')?.value;
   if (!token) return null;
   try {
-    return await db.getSessionUserId(token);
+    const userId = await db.getSessionUserId(token);
+    if (!userId) {
+      cookies.delete('micro_session', { path: '/' });
+    }
+    return userId;
   } catch {
+    cookies.delete('micro_session', { path: '/' });
     return null;
   }
 }

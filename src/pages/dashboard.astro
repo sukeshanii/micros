@@ -223,9 +223,9 @@ import Navbar from '../components/Navbar.astro';
       </div>
       <div class="flex border-b border-[#ebebeb]">
         <button id="dtab-macros" onclick="switchDTab('macros')"
-          class="flex-1 py-2.5 text-[12px] font-medium text-[#171717] border-b-2 border-[#171717] transition-colors">Macros & Energy</button>
+          class="flex-1 py-2.5 text-[11px] sm:text-[12px] font-medium text-[#171717] border-b-2 border-[#171717] transition-colors">Macros &amp; Energy</button>
         <button id="dtab-micros" onclick="switchDTab('micros')"
-          class="flex-1 py-2.5 text-[12px] font-medium text-[#888888] border-b-2 border-transparent hover:text-[#171717] transition-colors">Vitamins & Minerals</button>
+          class="flex-1 py-2.5 text-[11px] sm:text-[12px] font-medium text-[#888888] border-b-2 border-transparent hover:text-[#171717] transition-colors">Vitamins &amp; Minerals</button>
       </div>
       <div class="overflow-x-auto">
         <div class="min-w-[500px]">
@@ -328,7 +328,7 @@ async function loadDashboard() {
   ]);
 
   if (!dailyData) {
-    document.getElementById('summary-cards')!.innerHTML = `<div class="col-span-full text-center py-10 text-[#888888]">Sign in or create a guest session to see your dashboard.</div>`;
+    window.location.href = '/profile';
     return;
   }
 

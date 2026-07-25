@@ -154,7 +154,7 @@ export async function upsertProfile(userId: number, data: any): Promise<void> {
   const env = await getCloudflareEnv();
 
   if (isD1(env)) {
-    const existing = await env.DB.prepare('SELECT id FROM profiles WHERE user_id = ?').bind(userId).first();
+    const existing = await env.DB.prepare('SELECT user_id FROM profiles WHERE user_id = ?').bind(userId).first();
     if (existing) {
       await env.DB.prepare(
         `UPDATE profiles SET name=?, age=?, sex=?, height=?, weight=?, target_weight=?, goal=?, activity=?, diet=?, allergies=?, start_weight=?, meals_per_day=?, daily_calories=?, daily_protein=?, daily_carbs=?, daily_fat=? WHERE user_id=?`
@@ -171,8 +171,8 @@ export async function upsertProfile(userId: number, data: any): Promise<void> {
   }
 
   const db = await getPool();
-  if (!db) return;
-  const [existing] = await db.execute('SELECT id FROM profiles WHERE user_id = ?', [userId]);
+  if (!db) throw new Error('Database pool not available');
+  const [existing] = await db.execute('SELECT user_id FROM profiles WHERE user_id = ?', [userId]);
   const cols = `name=?,age=?,sex=?,height=?,weight=?,target_weight=?,goal=?,activity=?,diet=?,allergies=?,start_weight=?,meals_per_day=?,daily_calories=?,daily_protein=?,daily_carbs=?,daily_fat=?`;
   const vals = [name, age, sex, height, weight, targetWeight, goal, activity, diet, allergies, startWeight, mealsPerDay, dailyCalories, dailyProtein, dailyCarbs, dailyFat];
   if (existing.length > 0) {
@@ -188,15 +188,16 @@ export async function upsertProfile(userId: number, data: any): Promise<void> {
 
 // ── Sessions ──
 
-export async function createSession(token: string, userId: number): Promise<void> {
+export async function createSession(token: string, userId: number): Promise<boolean> {
   const env = await getCloudflareEnv();
   if (isD1(env)) {
     await env.DB.prepare('INSERT INTO sessions (id, user_id) VALUES (?, ?)').bind(token, userId).run();
-    return;
+    return true;
   }
   const db = await getPool();
-  if (!db) return;
+  if (!db) return false;
   await db.execute('INSERT INTO sessions (id, user_id) VALUES (?, ?)', [token, userId]);
+  return true;
 }
 
 export async function deleteSession(token: string): Promise<void> {
@@ -298,7 +299,7 @@ export async function getMeals(userId?: number, guestToken?: string, date?: stri
     sql += ' ORDER BY meal_number ASC, created_at ASC';
 
     let s = env.DB.prepare(sql);
-    for (const p of params) s = s.bind(p);
+    if (params.length > 0) s = s.bind(...params);
     const { results } = await s.all();
     return results || [];
   }

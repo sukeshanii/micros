@@ -74,6 +74,7 @@ export const GET: APIRoute = async ({ cookies, url }) => {
       status: 200, headers: { 'Content-Type': 'application/json' },
     });
   } catch (err) {
+    console.error('[daily GET] error:', err);
     return new Response(JSON.stringify({ error: 'Server error' }), {
       status: 500, headers: { 'Content-Type': 'application/json' },
     });

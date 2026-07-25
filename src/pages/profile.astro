@@ -590,9 +590,10 @@ profileForm.addEventListener('submit', async (e) => {
   saveProfileLocal(data);
 
   const email = emailInput.value.trim();
+  let registered = false;
   let synced = false;
   if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    const registered = await registerEmail(email);
+    registered = await registerEmail(email);
     if (registered) synced = await syncProfileToServer(data);
   } else {
     synced = await syncProfileToServer(data);
@@ -602,8 +603,21 @@ profileForm.addEventListener('submit', async (e) => {
   submitBtn.textContent = 'Save profile';
 
   if (synced) {
-    showSuccessNotification();
+    const verified = await fetchProfile();
+    if (verified?.profile) {
+      showSuccessNotification();
+      setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
+    } else {
+      errorDetail.textContent = 'Profile was not saved correctly. Please try again.';
+      errorNotification.classList.remove('hidden');
+      errorNotification.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  } else if (registered === false && email) {
+    errorDetail.textContent = 'Registration failed. Check that your email is correct and try again.';
+    errorNotification.classList.remove('hidden');
+    errorNotification.scrollIntoView({ behavior: 'smooth', block: 'center' });
   } else {
+    errorDetail.textContent = 'Could not save profile. Make sure you are signed in and try again.';
     errorNotification.classList.remove('hidden');
     errorNotification.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
@@ -669,6 +683,10 @@ async function init() {
     emailInput.value = serverData.email;
     emailStatus.textContent = '✓ Signed in';
     emailStatus.className = 'text-[12px] font-mono text-[#10b981] mt-1';
+    emailStatus.classList.remove('hidden');
+  } else {
+    emailStatus.textContent = 'Enter your email and click Save to register/sign in';
+    emailStatus.className = 'text-[12px] font-mono text-[#f5a623] mt-1';
     emailStatus.classList.remove('hidden');
   }
 

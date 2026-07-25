@@ -76,6 +76,7 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
       status: 200, headers: { 'Content-Type': 'application/json' },
     });
   } catch (err) {
+    console.error('[profile PUT] error:', err);
     return new Response(JSON.stringify({ error: 'Server error' }), {
       status: 500, headers: { 'Content-Type': 'application/json' },
     });

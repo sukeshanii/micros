@@ -9,7 +9,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "build:cf": "astro build --config astro.config.cloudflare.mjs",
-    "deploy:cf": "astro build --config astro.config.cloudflare.mjs && node -e \"const fs=require('fs');const d=JSON.parse(fs.readFileSync('dist/server/wrangler.json','utf8'));delete d.pages_build_output_dir;delete d.rules;fs.writeFileSync('dist/server/wrangler.json',JSON.stringify(d,null,2));\" && npx wrangler deploy",
+    "deploy": "astro build --config astro.config.cloudflare.mjs && node -e \"const fs=require('fs');const d=JSON.parse(fs.readFileSync('dist/server/wrangler.json','utf8'));delete d.no_bundle;delete d.pages_build_output_dir;delete d.rules;fs.writeFileSync('dist/server/wrangler.json',JSON.stringify(d,null,2));\" && npx wrangler deploy",
+    "deploy:cf": "astro build --config astro.config.cloudflare.mjs && node -e \"const fs=require('fs');const d=JSON.parse(fs.readFileSync('dist/server/wrangler.json','utf8'));delete d.no_bundle;delete d.pages_build_output_dir;delete d.rules;fs.writeFileSync('dist/server/wrangler.json',JSON.stringify(d,null,2));\" && npx wrangler deploy",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -26,5 +27,8 @@
   },
   "allowScripts": {
     "esbuild@0.28.1": true
+  },
+  "devDependencies": {
+    "wrangler": "^4.114.0"
   }
 }
